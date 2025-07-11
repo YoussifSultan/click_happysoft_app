@@ -30,17 +30,13 @@ class CustomTextBox extends StatefulWidget {
 }
 
 class _CustomTextBoxState extends State<CustomTextBox> {
-  late TextEditingController _controller;
-
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
     super.dispose();
   }
 
@@ -53,10 +49,6 @@ class _CustomTextBoxState extends State<CustomTextBox> {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _controller.text = widget.defaultText!;
-    });
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Column(
@@ -66,7 +58,7 @@ class _CustomTextBoxState extends State<CustomTextBox> {
               style: const TextStyle(fontWeight: FontWeight.bold)),
           AppSpacing.v4,
           TextFormField(
-            controller: _controller,
+            initialValue: widget.defaultText,
             readOnly: widget.readonly!,
             maxLines: widget.isMultiline! ? 20 : 1,
             decoration: InputDecoration(
@@ -253,8 +245,8 @@ class _CustomComboboxState extends State<CustomCombobox> {
         );
       },
       showOnFocus: true,
-      onSelected: (_customer) {
-        widget.selectedData.value = _customer;
+      onSelected: (customer) {
+        widget.selectedData.value = customer;
       },
     );
   }

@@ -1,11 +1,13 @@
 class Order {
-  final String productId;
+  final int orderId;
+  final int productId;
   final String productName;
-  final String customerId;
+  final int customerId;
   final String customerName;
   final int quantity;
 
   Order({
+    required this.orderId,
     required this.productId,
     required this.productName,
     required this.customerId,
@@ -13,9 +15,10 @@ class Order {
     required this.quantity,
   });
 
-  // Optional: Convert to/from Map for JSON or database
+  // Convert from Map (e.g. from database)
   factory Order.fromMap(Map<String, dynamic> map) {
     return Order(
+      orderId: map['orderId'],
       productId: map['productId'],
       productName: map['productName'],
       customerId: map['customerId'],
@@ -24,8 +27,10 @@ class Order {
     );
   }
 
+  // Convert to Map (e.g. to insert into database)
   Map<String, dynamic> toMap() {
     return {
+      'orderId': orderId,
       'productId': productId,
       'productName': productName,
       'customerId': customerId,
@@ -36,6 +41,6 @@ class Order {
 
   @override
   String toString() {
-    return 'Order(productId: $productId, productName: $productName, customerId: $customerId, customerName: $customerName, quantity: $quantity)';
+    return 'Order(orderId: $orderId, productId: $productId, productName: $productName, customerId: $customerId, customerName: $customerName, quantity: $quantity)';
   }
 }

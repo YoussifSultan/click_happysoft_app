@@ -4,17 +4,16 @@ import 'package:click_happysoft_app/ui_commonwidgets/common_constants.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/form_widgets.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/secondary_scaffold.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
 
-class AddNewOrderScreen extends StatefulWidget {
-  const AddNewOrderScreen({super.key});
+class AddNewOrderPage extends StatefulWidget {
+  const AddNewOrderPage({super.key});
 
   @override
-  State<AddNewOrderScreen> createState() => _AddNewOrderScreenState();
+  State<AddNewOrderPage> createState() => _AddNewOrderPageState();
 }
 
-class _AddNewOrderScreenState extends State<AddNewOrderScreen> {
+class _AddNewOrderPageState extends State<AddNewOrderPage> {
   final _formKey =
       GlobalKey<FormState>(); // Needed to access and validate the form
   Rx<Customer> selectedCustomer = Customer(id: 0, name: '').obs;

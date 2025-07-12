@@ -1,4 +1,5 @@
-import 'package:click_happysoft_app/orders_page/classes/orders_class.dart';
+import 'package:click_happysoft_app/orders_page/Viewmodels/ordersfulldata.dart';
+import 'package:click_happysoft_app/orders_page/order_sql_manager.dart';
 import 'package:click_happysoft_app/routing/app_routes.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/common_constants.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/primary_scaffold.dart';
@@ -14,91 +15,33 @@ class OrdersPage extends StatefulWidget {
 }
 
 class _OrdersPageState extends State<OrdersPage> {
-  List<Order> orders = [
-    Order(
-        orderId: 1,
-        productId: 1,
-        productName: 'Mirrors',
-        customerId: 2,
-        customerName: 'Aly',
-        quantity: 5),
-    Order(
-        orderId: 2,
-        productId: 1,
-        productName: 'Mirrors',
-        customerId: 2,
-        customerName: 'Aly',
-        quantity: 5),
-    Order(
-        orderId: 2,
-        productId: 1,
-        productName: 'Mirrors',
-        customerId: 2,
-        customerName: 'Aly',
-        quantity: 5),
-    Order(
-        orderId: 2,
-        productId: 1,
-        productName: 'Mirrors',
-        customerId: 2,
-        customerName: 'Aly',
-        quantity: 5),
-    Order(
-        orderId: 2,
-        productId: 1,
-        productName: 'Mirrors',
-        customerId: 2,
-        customerName: 'Aly',
-        quantity: 5),
-    Order(
-        orderId: 2,
-        productId: 1,
-        productName: 'Mirrors',
-        customerId: 2,
-        customerName: 'Aly',
-        quantity: 5),
-    Order(
-        orderId: 2,
-        productId: 1,
-        productName: 'Mirrors',
-        customerId: 2,
-        customerName: 'Aly',
-        quantity: 5),
-    Order(
-        orderId: 2,
-        productId: 1,
-        productName: 'Mirrors',
-        customerId: 2,
-        customerName: 'Aly',
-        quantity: 5),
-    Order(
-        orderId: 2,
-        productId: 1,
-        productName: 'Mirrors',
-        customerId: 2,
-        customerName: 'Aly',
-        quantity: 5),
-  ];
   @override
   Widget build(BuildContext context) {
     return PrimaryScaffold(
-        body: ListView.builder(
+        body: FutureBuilder<List<OrderDetailsVM>>(
+      future: OrderSqlManager().fetchAllOrders(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return const CircularProgressIndicator();
+        final orders = snapshot.data!;
+        return ListView.builder(
             itemCount: orders.length,
             itemBuilder: (context, index) {
-              final item = orders[index];
+              final order = orders[index];
               return ListTile(
                 title: Text(
-                  item.customerName,
+                  order.customerName,
                   style: const TextStyle(color: AppColors.black, fontSize: 18),
                 ),
                 trailing: Text(
-                  "${item.productName} - ${item.quantity}",
+                  "${order.productName} - ${order.qty}",
                   style: const TextStyle(color: AppColors.gray, fontSize: 13),
                 ),
                 onTap: () {
-                  Get.toNamed(AppRoutes.editOrder, arguments: item.toMap());
+                  Get.toNamed(AppRoutes.editOrder, arguments: order.toMap());
                 },
               );
-            }));
+            });
+      },
+    ));
   }
 }

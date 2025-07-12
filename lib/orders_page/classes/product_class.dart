@@ -2,22 +2,19 @@ class Product {
   final int id;
   final String name;
 
-  Product({
-    required this.id,
-    required this.name,
-  });
+  Product({required this.id, required this.name});
 
-  factory Product.fromMap(Map<String, dynamic> map) {
+  factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      id: map['id'],
-      name: map['name'],
+      id: json['product_id'],
+      name: json['product_name'],
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'name': name,
+      'product_id': id,
+      'product_name': name,
     };
   }
 

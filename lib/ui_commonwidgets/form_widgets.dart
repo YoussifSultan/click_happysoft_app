@@ -139,8 +139,7 @@ class CustomButton extends StatelessWidget {
                         borderRadius: BorderRadius.circular(60),
                         border: Border.all(
                             width: 2,
-                            color:
-                                isHover ? AppColors.white : AppColors.primary)),
+                            color: isHover ? AppColors.white : color)),
                     child:
                         Icon(icon, color: isHover ? AppColors.white : color)),
               ],

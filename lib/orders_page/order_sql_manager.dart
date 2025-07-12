@@ -1,48 +1,43 @@
-import 'package:click_happysoft_app/db_sql/db_helper.dart';
-import 'package:click_happysoft_app/orders_page/classes/orders_class.dart';
+import 'package:click_happysoft_app/orders_page/Viewmodels/ordersfulldata.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class OrderSqlManager {
-  Future<int> insertOrder(Order order) async {
-    final db = await DBHelper().database;
-    return await db.insert('orders', order.toMap());
-  }
+  /// Fetches orders from the database and returns a list of Order objects.
+  Future<List<OrderDetailsVM>> fetchAllOrders() async {
+    final url = Uri.parse('https://restapi-production-b83a.up.railway.app/get');
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': 'aP_cPLGZW69DTVH96mvDL1qJ5f2PfPY9SlpWox7rkCw'
+      },
+      body: jsonEncode({
+        'query': '''
+SELECT 
+    o.order_id,
+    o.order_date,
+    c.customer_name,
+    p.product_name,
+    s.salesman_name,
+    o.qty
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+JOIN products p ON o.product_id = p.product_id
+JOIN salesman s ON o.salesman_id = s.salesman_id
+where o.salesman_id = 1
+ORDER BY o.order_date DESC
 
-  Future<List<Order>> getOrders() async {
-    final db = await DBHelper().database;
-    final List<Map<String, dynamic>> maps = await db.query('orders');
-
-    return List.generate(maps.length, (i) {
-      return Order.fromMap(maps[i]);
-    });
-  }
-
-  Future<int> updateOrder(Order order) async {
-    final db = await DBHelper().database;
-    return await db.update(
-      'orders',
-      order.toMap(),
-      where: 'orderId = ?',
-      whereArgs: [order.orderId],
+''',
+      }),
     );
-  }
-
-  Future<int> deleteOrder(int orderId) async {
-    final db = await DBHelper().database;
-    return await db.delete(
-      'orders',
-      where: 'orderId = ?',
-      whereArgs: [orderId],
-    );
-  }
-
-  Future<List<Order>> searchOrders(String keyword) async {
-    final db = await DBHelper().database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      'orders',
-      where: 'productName LIKE ? OR customerName LIKE ?',
-      whereArgs: ['%$keyword%', '%$keyword%'],
-    );
-
-    return List.generate(maps.length, (i) => Order.fromMap(maps[i]));
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return List.generate(data.length, (i) {
+        return OrderDetailsVM.fromJson(data[i]);
+      });
+    } else {
+      return Future.error('Failed to load data');
+    }
   }
 }

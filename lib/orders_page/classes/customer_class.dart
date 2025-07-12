@@ -2,22 +2,19 @@ class Customer {
   final int id;
   final String name;
 
-  Customer({
-    required this.id,
-    required this.name,
-  });
+  Customer({required this.id, required this.name});
 
-  factory Customer.fromMap(Map<String, dynamic> map) {
+  factory Customer.fromJson(Map<String, dynamic> json) {
     return Customer(
-      id: map['id'],
-      name: map['name'],
+      id: json['customer_id'],
+      name: json['customer_name'],
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'name': name,
+      'customer_id': id,
+      'customer_name': name,
     };
   }
 

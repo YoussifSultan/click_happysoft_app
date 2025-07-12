@@ -1,5 +1,5 @@
+import 'package:click_happysoft_app/orders_page/Viewmodels/ordersfulldata.dart';
 import 'package:click_happysoft_app/orders_page/classes/customer_class.dart';
-import 'package:click_happysoft_app/orders_page/classes/orders_class.dart';
 import 'package:click_happysoft_app/orders_page/classes/product_class.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/common_constants.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/form_widgets.dart';
@@ -19,7 +19,7 @@ class _EditOrdersPageState extends State<EditOrdersPage> {
       GlobalKey<FormState>(); // Needed to access and validate the form
   late Rx<Customer> selectedCustomer;
   late Rx<Product> selectedProduct;
-  late Order selectedOrder;
+  late OrderDetailsVM selectedOrder;
   List<Customer> customersList = [
     Customer(id: 1, name: 'Aly'),
     Customer(id: 2, name: 'Cool Man'),
@@ -36,7 +36,7 @@ class _EditOrdersPageState extends State<EditOrdersPage> {
   @override
   void initState() {
     final Map<String, dynamic> args = Get.arguments;
-    selectedOrder = Order.fromMap(args);
+    selectedOrder = OrderDetailsVM.fromJson(args);
     selectedCustomer =
         Customer(id: selectedOrder.customerId, name: selectedOrder.customerName)
             .obs;
@@ -96,7 +96,7 @@ class _EditOrdersPageState extends State<EditOrdersPage> {
               CustomTextBox(
                 label: 'Quantity',
                 helperText: 'Enter Quantity',
-                defaultText: '${selectedOrder.quantity}',
+                defaultText: '${selectedOrder.qty}',
                 icon: Icons.numbers,
                 validator: (value) {
                   if (GetUtils.isNullOrBlank(value)!) {

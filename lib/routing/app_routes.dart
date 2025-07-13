@@ -1,7 +1,9 @@
+import 'package:click_happysoft_app/login_page/login_page.dart';
 import 'package:click_happysoft_app/orders_page/Pages/addneworder.dart';
 import 'package:click_happysoft_app/orders_page/Pages/edit_order.dart';
 import 'package:click_happysoft_app/orders_page/Pages/orders.dart';
 import 'package:click_happysoft_app/routing/main_menu.dart';
+import 'package:click_happysoft_app/routing/splash_screen.dart';
 import 'package:get/get.dart';
 
 class AppRoutes {
@@ -12,7 +14,10 @@ class AppRoutes {
   /// Example: Get.toNamed(AppRoutes.editOrder, arguments: item.toMap());
   static const editOrder = '/orders/edit';
   static const orders = '/orders/';
+
   static const mainmenu = '/menu/';
+  static const login = '/login/';
+  static const splashScreen = '/splash/';
 
   static final pages = [
     GetPage(
@@ -28,9 +33,17 @@ class AppRoutes {
         transition: Transition.fadeIn,
         page: () => const OrdersPage()),
     GetPage(
-      name: editOrder,
+        name: editOrder,
+        transition: Transition.fadeIn,
+        page: () => const EditOrdersPage()),
+    GetPage(
+        name: login,
+        transition: Transition.fadeIn,
+        page: () => const LoginPage()),
+    GetPage(
+      name: splashScreen,
       transition: Transition.fadeIn,
-      page: () => const EditOrdersPage(),
+      page: () => const SplashScreen(),
     ),
   ];
 }

@@ -7,10 +7,12 @@ class CustomTextBox extends StatefulWidget {
   final String label;
   final String? helperText;
   final Function? validator;
+  final Function? onSaved;
   final String? errorText;
   final IconData? icon;
   final bool? isMultiline;
   final bool? readonly;
+  final bool? isPassword;
   final String? defaultText;
 
   const CustomTextBox({
@@ -23,6 +25,8 @@ class CustomTextBox extends StatefulWidget {
     this.readonly = false,
     this.validator,
     this.defaultText = "",
+    this.isPassword = false,
+    this.onSaved,
   });
 
   @override
@@ -61,6 +65,12 @@ class _CustomTextBoxState extends State<CustomTextBox> {
             initialValue: widget.defaultText,
             readOnly: widget.readonly!,
             maxLines: widget.isMultiline! ? 20 : 1,
+            onSaved: (val) {
+              if (widget.onSaved != null) {
+                widget.onSaved!(val);
+              }
+            },
+            obscureText: widget.isPassword!,
             decoration: InputDecoration(
               hintText: widget.helperText,
               errorText: widget.errorText,
@@ -135,6 +145,7 @@ class CustomButton extends StatelessWidget {
                 ),
                 AppSpacing.h16,
                 Container(
+                    padding: const EdgeInsets.all(3),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(60),
                         border: Border.all(

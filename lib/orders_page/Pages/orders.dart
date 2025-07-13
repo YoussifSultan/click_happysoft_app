@@ -19,9 +19,11 @@ class _OrdersPageState extends State<OrdersPage> {
   Widget build(BuildContext context) {
     return PrimaryScaffold(
         body: FutureBuilder<List<OrderDetailsVM>>(
-      future: OrderSqlManager().fetchAllOrders(),
+      future: OrderSqlManager.fetchAllOrders(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) return const CircularProgressIndicator();
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
         final orders = snapshot.data!;
         return ListView.builder(
             itemCount: orders.length,

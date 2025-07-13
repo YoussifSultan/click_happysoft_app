@@ -1,5 +1,6 @@
 import 'package:click_happysoft_app/orders_page/classes/customer_class.dart';
 import 'package:click_happysoft_app/orders_page/classes/product_class.dart';
+import 'package:click_happysoft_app/orders_page/order_sql_manager.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/common_constants.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/form_widgets.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/secondary_scaffold.dart';
@@ -19,22 +20,18 @@ class _AddNewOrderPageState extends State<AddNewOrderPage> {
   Rx<Customer> selectedCustomer = Customer(id: 0, name: '').obs;
   Rx<Product> selectedProduct = Product(id: 0, name: '').obs;
 
-  List<Customer> customersList = [
-    Customer(id: 1, name: 'Aly'),
-    Customer(id: 2, name: 'Cool Man'),
-    Customer(id: 3, name: 'Dany Dany'),
-    Customer(id: 4, name: 'Daddy Mommy'),
-  ];
-  List<Product> productsList = [
-    Product(id: 1, name: 'Mirrors'),
-    Product(id: 2, name: 'Water'),
-    Product(id: 3, name: 'Fruit'),
-    Product(id: 4, name: 'Vegetables'),
-  ];
+  List<Customer> customersList = [];
+  List<Product> productsList = [];
 
   @override
   void initState() {
+    initializeCustomerAndProduct();
     super.initState();
+  }
+
+  Future<void> initializeCustomerAndProduct() async {
+    customersList = await OrderSqlManager.fetchAllCustomers();
+    productsList = await OrderSqlManager.fetchAllProducts();
   }
 
   @override

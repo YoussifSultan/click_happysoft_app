@@ -38,6 +38,7 @@ dependencies:
   animated_bottom_navigation_bar: ^1.4.0
   flutter_typeahead: ^5.2.0
   http: ^1.4.0
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:

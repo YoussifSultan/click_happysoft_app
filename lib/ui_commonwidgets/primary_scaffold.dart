@@ -14,8 +14,11 @@ class PrimaryScaffold extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.light,
         elevation: 0.5,
-        leading: const Padding(
-            padding: EdgeInsets.only(left: 12.0), child: FlutterLogo()),
+        title: Image.asset(
+          "assets/images/company_logo.png",
+          height: 200,
+          width: 120,
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.search, color: AppColors.black),

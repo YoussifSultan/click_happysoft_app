@@ -55,6 +55,9 @@ class _MainMenuPageState extends State<MainMenuPage> {
             FutureBuilder(
               future: getSalesmanData(),
               builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                if (snapshot.data == null) {
+                  return const Center(child: CircularProgressIndicator());
+                }
                 return ListTile(
                   leading: const CircleAvatar(
                     backgroundImage: NetworkImage(

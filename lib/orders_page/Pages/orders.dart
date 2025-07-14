@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OrdersPage extends StatefulWidget {
@@ -40,8 +41,9 @@ class _OrdersPageState extends State<OrdersPage> {
       final orders = Get.find<OrdersListController>().orders;
       if (orders.isEmpty) {
         return const Center(
-          child: CircularProgressIndicator(
-            color: AppColors.primary,
+          child: Text(
+            'No orders found',
+            style: TextStyle(color: AppColors.gray, fontSize: 18),
           ),
         );
       }
@@ -55,6 +57,10 @@ class _OrdersPageState extends State<OrdersPage> {
                 style: const TextStyle(color: AppColors.black, fontSize: 18),
               ),
               trailing: Text(
+                DateFormat('dd/MM/yyyy').format(order.date),
+                style: const TextStyle(color: AppColors.gray, fontSize: 13),
+              ),
+              subtitle: Text(
                 "${order.productName} - ${order.qty}",
                 style: const TextStyle(color: AppColors.gray, fontSize: 13),
               ),

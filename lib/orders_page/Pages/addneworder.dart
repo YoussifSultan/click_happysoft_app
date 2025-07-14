@@ -1,4 +1,5 @@
 import 'package:click_happysoft_app/orders_page/classes/customer_class.dart';
+import 'package:click_happysoft_app/orders_page/classes/orders_class.dart';
 import 'package:click_happysoft_app/orders_page/classes/product_class.dart';
 import 'package:click_happysoft_app/orders_page/order_sql_manager.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/common_constants.dart';
@@ -6,6 +7,7 @@ import 'package:click_happysoft_app/ui_commonwidgets/form_widgets.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/secondary_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddNewOrderPage extends StatefulWidget {
   const AddNewOrderPage({super.key});
@@ -19,18 +21,22 @@ class _AddNewOrderPageState extends State<AddNewOrderPage> {
       GlobalKey<FormState>(); // Needed to access and validate the form
   Rx<Customer> selectedCustomer = Customer(id: 0, name: '').obs;
   Rx<Product> selectedProduct = Product(id: 0, name: '').obs;
+  DateTime date = DateTime.now();
+  int qty = 1; // Default quantity
 
   List<Customer> customersList = [];
   List<Product> productsList = [];
 
   @override
   void initState() {
-    initializeCustomerAndProduct();
     super.initState();
   }
 
-  Future<void> initializeCustomerAndProduct() async {
+  Future<void> initializeCustomer() async {
     customersList = await OrderSqlManager.fetchAllCustomers();
+  }
+
+  Future<void> initializeProducts() async {
     productsList = await OrderSqlManager.fetchAllProducts();
   }
 
@@ -45,40 +51,34 @@ class _AddNewOrderPageState extends State<AddNewOrderPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               AppSpacing.v16,
-              CustomCombobox(
-                dataList: customersList,
-                selectedData: selectedCustomer,
-                icon: Icons.person,
-                label: 'Customer Name',
-                helperText: 'Choose Customer',
-              ),
-              Obx(
-                () {
-                  return CustomTextBox(
-                    label: 'Customer ID',
-                    helperText: 'Customer ID',
-                    readonly: true,
-                    defaultText: '${selectedCustomer.value.id}',
-                    icon: Icons.person,
-                  );
-                },
-              ),
-              CustomCombobox(
-                dataList: productsList,
-                icon: Icons.category,
-                selectedData: selectedProduct,
-                label: 'Product Name',
-                helperText: 'Choose Product',
-              ),
-              Obx(
-                () => CustomTextBox(
-                  label: 'Product ID',
-                  helperText: 'Product ID',
-                  defaultText: '${selectedProduct.value.id}',
-                  icon: Icons.category,
-                  readonly: true,
-                ),
-              ),
+              FutureBuilder(
+                  future: initializeCustomer(),
+                  builder: (context, snapshot) {
+                    return Obx(
+                      () => CustomCombobox(
+                        dataList: customersList,
+                        selectedData: selectedCustomer,
+                        suffixText: 'ID: ${selectedCustomer.value.id}',
+                        icon: Icons.person,
+                        label: 'Customer Name',
+                        helperText: 'Choose Customer',
+                      ),
+                    );
+                  }),
+              FutureBuilder(
+                  future: initializeProducts(),
+                  builder: (context, snapshot) {
+                    return Obx(
+                      () => CustomCombobox(
+                        dataList: productsList,
+                        icon: Icons.category,
+                        suffixText: 'ID: ${selectedProduct.value.id}',
+                        selectedData: selectedProduct,
+                        label: 'Product Name',
+                        helperText: 'Choose Product',
+                      ),
+                    );
+                  }),
               CustomTextBox(
                 label: 'Quantity',
                 helperText: 'Enter Quantity',
@@ -92,24 +92,58 @@ class _AddNewOrderPageState extends State<AddNewOrderPage> {
                   }
                   return null;
                 },
+                onSaved: (value) {
+                  qty = int.parse(value);
+                },
+              ),
+              DatepickerBox(
+                label: 'Select Order Date',
+                initialDate: DateTime.now(),
+                lastDate: DateTime.now(),
+                onSaved: (value) {
+                  date = value;
+                },
               ),
               AppSpacing.v16,
               CustomButton(
                   text: 'Save',
                   color: AppColors.primary,
                   icon: Icons.check,
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      Get.showSnackbar(const GetSnackBar(
-                        title: 'Submitted',
-                        message: 'The order is saved successfully',
-                      ));
-                    }
+                  onPressed: () async {
+                    await saveNewOrder();
                   })
             ],
           ),
         ),
       ),
     );
+  }
+
+  Future<void> saveNewOrder() async {
+    if (_formKey.currentState!.validate()) {
+      final prefs = await SharedPreferences.getInstance();
+      int salesmanID = prefs.getInt('salesman_id')!;
+      _formKey.currentState!.save();
+      Order newOrder = Order(
+        productId: selectedProduct.value.id,
+        customerId: selectedCustomer.value.id,
+        salesmanId: salesmanID,
+        qty: qty,
+        date: date,
+        id: 0, // Assuming ID is auto-generated
+      );
+      int responseCode = await OrderSqlManager.addnewOrder(newOrder);
+      if (responseCode == 200) {
+        Get.snackbar(
+          'Saved Successfully',
+          'The order is saved successfully',
+        );
+      } else {
+        Get.snackbar(
+          '$responseCode',
+          'Please try again later',
+        );
+      }
+    }
   }
 }

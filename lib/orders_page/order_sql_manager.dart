@@ -1,12 +1,15 @@
 import 'package:click_happysoft_app/orders_page/Viewmodels/ordersfulldata.dart';
 import 'package:click_happysoft_app/orders_page/classes/customer_class.dart';
+import 'package:click_happysoft_app/orders_page/classes/orders_class.dart';
 import 'package:click_happysoft_app/orders_page/classes/product_class.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:intl/intl.dart';
+
 class OrderSqlManager {
   /// Fetches orders from the database and returns a list of Order objects.
-  static Future<List<OrderDetailsVM>> fetchAllOrders() async {
+  static Future<List<OrderDetailsVM>> fetchAllOrders(int salesmanID) async {
     final url = Uri.parse('https://restapi-production-b83a.up.railway.app/get');
     final response = await http.post(
       url,
@@ -19,6 +22,9 @@ class OrderSqlManager {
 SELECT 
     o.order_id,
     o.order_date,
+    o.product_id,
+    o.customer_id,
+    o.salesman_id,
     c.customer_name,
     p.product_name,
     s.salesman_name,
@@ -27,13 +33,14 @@ FROM orders o
 JOIN customers c ON o.customer_id = c.customer_id
 JOIN products p ON o.product_id = p.product_id
 JOIN salesman s ON o.salesman_id = s.salesman_id
-where o.salesman_id = 1
+where o.salesman_id = $salesmanID 
 ORDER BY o.order_date DESC
 ''',
       }),
     );
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
+      print(data);
       return List.generate(data.length, (i) {
         return OrderDetailsVM.fromJson(data[i]);
       });
@@ -88,6 +95,66 @@ Select * from railway.products''',
       });
     } else {
       return Future.error('Failed to load data');
+    }
+  }
+
+  /// Saves a new order to the database.
+  /// Returns the ressponse code from the server.'
+  /// order should be an instance of Order class.
+  static Future<int> addnewOrder(Order order) async {
+    final url =
+        Uri.parse('https://restapi-production-b83a.up.railway.app/action');
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': 'aP_cPLGZW69DTVH96mvDL1qJ5f2PfPY9SlpWox7rkCw'
+      },
+      body: jsonEncode({
+        'query': '''
+INSERT INTO orders (product_id, customer_id, salesman_id, qty, order_date)
+VALUES (${order.productId}, ${order.customerId}, ${order.salesmanId}, ${order.qty}, '${order.date.toIso8601String()}');''',
+      }),
+    );
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return 200; // Assuming 200 is the success code
+    } else {
+      final data = jsonDecode(response.body);
+      return response.statusCode;
+    }
+  }
+
+  /// Edits the existing order in the database.
+  /// Returns the response code from the server.
+  static Future<int> editOrder(Order newOrder) async {
+    final url =
+        Uri.parse('https://restapi-production-b83a.up.railway.app/action');
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': 'aP_cPLGZW69DTVH96mvDL1qJ5f2PfPY9SlpWox7rkCw'
+      },
+      body: jsonEncode({
+        'query': '''
+UPDATE orders
+SET
+  product_id = ${newOrder.productId},
+  customer_id = ${newOrder.customerId},
+  salesman_id = ${newOrder.salesmanId},
+  qty = ${newOrder.qty},
+  order_date = '${newOrder.date.toIso8601String()}'
+WHERE order_id = ${newOrder.id};
+''',
+      }),
+    );
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print(data);
+      return 200; // Assuming 200 is the success code
+    } else {
+      return response.statusCode;
     }
   }
 }

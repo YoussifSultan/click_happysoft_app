@@ -6,6 +6,7 @@ import 'package:click_happysoft_app/ui_commonwidgets/primary_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OrdersPage extends StatefulWidget {
   const OrdersPage({super.key});
@@ -16,10 +17,24 @@ class OrdersPage extends StatefulWidget {
 
 class _OrdersPageState extends State<OrdersPage> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<List<OrderDetailsVM>> fetchOrdersOfSalesman() async {
+    final prefs = await SharedPreferences.getInstance();
+    int salesmanID = prefs.getInt('salesman_id')!;
+    List<OrderDetailsVM> orders =
+        await OrderSqlManager.fetchAllOrders(salesmanID);
+    print(orders.first);
+    return orders;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return PrimaryScaffold(
         body: FutureBuilder<List<OrderDetailsVM>>(
-      future: OrderSqlManager.fetchAllOrders(),
+      future: fetchOrdersOfSalesman(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());

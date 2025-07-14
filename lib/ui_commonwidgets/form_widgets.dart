@@ -2,6 +2,7 @@ import 'package:click_happysoft_app/ui_commonwidgets/common_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class CustomTextBox extends StatefulWidget {
   final String label;
@@ -14,6 +15,7 @@ class CustomTextBox extends StatefulWidget {
   final bool? readonly;
   final bool? isPassword;
   final String? defaultText;
+  final String? suffixText;
 
   const CustomTextBox({
     super.key,
@@ -27,6 +29,7 @@ class CustomTextBox extends StatefulWidget {
     this.defaultText = "",
     this.isPassword = false,
     this.onSaved,
+    this.suffixText = "",
   });
 
   @override
@@ -34,13 +37,24 @@ class CustomTextBox extends StatefulWidget {
 }
 
 class _CustomTextBoxState extends State<CustomTextBox> {
+  TextEditingController controller = TextEditingController();
   @override
   void initState() {
+    controller.text = widget.defaultText!;
     super.initState();
   }
 
   @override
+  void didUpdateWidget(covariant CustomTextBox oldWidget) {
+    if (oldWidget.defaultText != widget.defaultText) {
+      controller.text = widget.defaultText!;
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   void dispose() {
+    controller.dispose();
     super.dispose();
   }
 
@@ -62,18 +76,14 @@ class _CustomTextBoxState extends State<CustomTextBox> {
               style: const TextStyle(fontWeight: FontWeight.bold)),
           AppSpacing.v4,
           TextFormField(
-            initialValue: widget.defaultText,
+            controller: controller,
             readOnly: widget.readonly!,
             maxLines: widget.isMultiline! ? 20 : 1,
-            onSaved: (val) {
-              if (widget.onSaved != null) {
-                widget.onSaved!(val);
-              }
-            },
             obscureText: widget.isPassword!,
             decoration: InputDecoration(
               hintText: widget.helperText,
               errorText: widget.errorText,
+              suffixText: widget.suffixText,
               enabledBorder: _customBorder(AppColors.light),
               focusedBorder: _customBorder(AppColors.primary),
               errorBorder: _customBorder(Colors.red),
@@ -82,6 +92,11 @@ class _CustomTextBoxState extends State<CustomTextBox> {
               suffixIcon: Icon(widget.icon ?? Icons.edit,
                   size: 16, color: Colors.grey.shade400),
             ),
+            onSaved: (val) {
+              if (widget.onSaved != null) {
+                widget.onSaved!(val);
+              }
+            },
             validator: (value) {
               if (widget.validator != null) {
                 return widget.validator!(value);
@@ -165,6 +180,7 @@ class CustomButton extends StatelessWidget {
 class CustomCombobox extends StatefulWidget {
   final String label;
   final String helperText;
+  final String suffixText;
   final String? text;
   final Function? validator;
   final String? errorText;
@@ -182,6 +198,7 @@ class CustomCombobox extends StatefulWidget {
     this.validator,
     this.errorText,
     this.icon,
+    this.suffixText = "",
   });
 
   @override
@@ -228,6 +245,7 @@ class _CustomComboboxState extends State<CustomCombobox> {
                 focusNode: focusNode,
                 decoration: InputDecoration(
                   hintText: widget.helperText,
+                  suffixText: widget.suffixText,
                   errorText: widget.errorText,
                   enabledBorder: _customBorder(AppColors.light),
                   focusedBorder: _customBorder(AppColors.primary),
@@ -259,5 +277,96 @@ class _CustomComboboxState extends State<CustomCombobox> {
         widget.selectedData.value = customer;
       },
     );
+  }
+}
+
+class DatepickerBox extends StatefulWidget {
+  final Function? onSaved;
+  final String label;
+  final DateTime initialDate;
+  final DateTime lastDate;
+
+  const DatepickerBox(
+      {super.key,
+      this.onSaved,
+      this.label = "",
+      required this.initialDate,
+      required this.lastDate});
+
+  @override
+  State<DatepickerBox> createState() => _DatepickerBoxState();
+}
+
+class _DatepickerBoxState extends State<DatepickerBox> {
+  final TextEditingController _dateController = TextEditingController();
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: widget.initialDate,
+      firstDate: DateTime(2000),
+      lastDate: widget.lastDate,
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: AppColors.light, // calendar header
+              onPrimary: AppColors.dark, // calendar text
+              onSurface: AppColors.primary, // body text
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.black, // button text color
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        _dateController.text = DateFormat('dd/MM/yyyy').format(pickedDate);
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    _dateController.text = DateFormat('dd/MM/yyyy').format(widget.initialDate);
+    super.initState();
+  }
+
+  InputBorder _customBorder(Color color) {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(16),
+      borderSide: BorderSide(color: color, width: 1.5),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: TextFormField(
+          controller: _dateController,
+          readOnly: true,
+          decoration: InputDecoration(
+            labelText: widget.label,
+            hintText: 'DD/MM/YYYY',
+            enabledBorder: _customBorder(AppColors.light),
+            focusedBorder: _customBorder(AppColors.primary),
+            suffixIcon: IconButton(
+              icon: const Icon(Icons.calendar_today),
+              onPressed: () => _selectDate(context),
+            ),
+          ),
+          onSaved: (val) {
+            if (widget.onSaved != null) {
+              widget.onSaved!(DateFormat('dd/MM/yyyy').parse(val!));
+            }
+          },
+        ));
   }
 }

@@ -138,9 +138,9 @@ class _LoginPageState extends State<LoginPage> {
         );
         final prefs = await SharedPreferences.getInstance();
         await prefs.setBool('is_logged_in', true);
-        await prefs.setString('email', salesman.email);
+        await prefs.setString('salesman_email', salesman.email);
         await prefs.setInt('salesman_id', salesman.id);
-        await prefs.setString('name', salesman.name);
+        await prefs.setString('salesman_name', salesman.name);
         Get.offAndToNamed(AppRoutes.orders);
       } else {
         Get.snackbar(

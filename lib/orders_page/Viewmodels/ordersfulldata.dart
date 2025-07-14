@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class OrderDetailsVM {
   final int id;
   final int productId;
@@ -26,7 +28,7 @@ class OrderDetailsVM {
       customerId: json['customer_id'],
       salesmanId: json['salesman_id'],
       qty: json['qty'],
-      date: DateTime.parse(json['order_date']),
+      date: DateFormat("yyyy-MM-dd").parse(json['order_date']),
       productName: json['product_name'], // must come from SQL JOIN
       customerName: json['customer_name'], // must come from SQL JOIN
     );

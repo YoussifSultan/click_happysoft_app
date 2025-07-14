@@ -1,11 +1,14 @@
 import 'package:click_happysoft_app/orders_page/Viewmodels/ordersfulldata.dart';
 import 'package:click_happysoft_app/orders_page/classes/customer_class.dart';
+import 'package:click_happysoft_app/orders_page/classes/orders_class.dart';
 import 'package:click_happysoft_app/orders_page/classes/product_class.dart';
+import 'package:click_happysoft_app/orders_page/order_sql_manager.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/common_constants.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/form_widgets.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/secondary_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EditOrdersPage extends StatefulWidget {
   const EditOrdersPage({super.key});
@@ -20,18 +23,18 @@ class _EditOrdersPageState extends State<EditOrdersPage> {
   late Rx<Customer> selectedCustomer;
   late Rx<Product> selectedProduct;
   late OrderDetailsVM selectedOrder;
-  List<Customer> customersList = [
-    Customer(id: 1, name: 'Aly'),
-    Customer(id: 2, name: 'Cool Man'),
-    Customer(id: 3, name: 'Dany Dany'),
-    Customer(id: 4, name: 'Daddy Mommy'),
-  ];
-  List<Product> productsList = [
-    Product(id: 1, name: 'Mirrors'),
-    Product(id: 2, name: 'Water'),
-    Product(id: 3, name: 'Fruit'),
-    Product(id: 4, name: 'Vegetables'),
-  ];
+  List<Customer> customersList = [];
+  List<Product> productsList = [];
+  DateTime date = DateTime.now();
+  int qty = 1; // Default quantity
+
+  Future<void> initializeCustomer() async {
+    customersList = await OrderSqlManager.fetchAllCustomers();
+  }
+
+  Future<void> initializeProducts() async {
+    productsList = await OrderSqlManager.fetchAllProducts();
+  }
 
   @override
   void initState() {
@@ -57,46 +60,38 @@ class _EditOrdersPageState extends State<EditOrdersPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               AppSpacing.v16,
-              CustomCombobox(
-                dataList: customersList,
-                selectedData: selectedCustomer,
-                icon: Icons.person,
-                text: selectedOrder.customerName,
-                label: 'Customer Name',
-                helperText: 'Choose Customer',
-              ),
-              Obx(
-                () {
-                  return CustomTextBox(
-                    label: 'Customer ID',
-                    helperText: 'Customer ID',
-                    readonly: true,
-                    defaultText: '${selectedCustomer.value.id}',
-                    icon: Icons.person,
-                  );
-                },
-              ),
-              CustomCombobox(
-                dataList: productsList,
-                icon: Icons.category,
-                selectedData: selectedProduct,
-                text: selectedOrder.productName,
-                label: 'Product Name',
-                helperText: 'Choose Product',
-              ),
-              Obx(
-                () => CustomTextBox(
-                  label: 'Product ID',
-                  helperText: 'Product ID',
-                  defaultText: '${selectedProduct.value.id}',
-                  icon: Icons.category,
-                  readonly: true,
-                ),
-              ),
+              FutureBuilder(
+                  future: initializeCustomer(),
+                  builder: (context, snapshot) {
+                    return Obx(
+                      () => CustomCombobox(
+                        dataList: customersList,
+                        selectedData: selectedCustomer,
+                        suffixText: 'ID: ${selectedCustomer.value.id}',
+                        icon: Icons.person,
+                        label: 'Customer Name',
+                        helperText: 'Choose Customer',
+                      ),
+                    );
+                  }),
+              FutureBuilder(
+                  future: initializeProducts(),
+                  builder: (context, snapshot) {
+                    return Obx(
+                      () => CustomCombobox(
+                        dataList: productsList,
+                        icon: Icons.category,
+                        suffixText: 'ID: ${selectedProduct.value.id}',
+                        selectedData: selectedProduct,
+                        label: 'Product Name',
+                        helperText: 'Choose Product',
+                      ),
+                    );
+                  }),
               CustomTextBox(
                 label: 'Quantity',
                 helperText: 'Enter Quantity',
-                defaultText: '${selectedOrder.qty}',
+                defaultText: '1',
                 icon: Icons.numbers,
                 validator: (value) {
                   if (GetUtils.isNullOrBlank(value)!) {
@@ -106,41 +101,58 @@ class _EditOrdersPageState extends State<EditOrdersPage> {
                   }
                   return null;
                 },
+                onSaved: (value) {
+                  qty = int.parse(value);
+                },
+              ),
+              DatepickerBox(
+                label: 'Select Order Date',
+                initialDate: DateTime.now(),
+                lastDate: DateTime.now(),
+                onSaved: (value) {
+                  date = value;
+                },
               ),
               AppSpacing.v16,
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CustomButton(
-                      text: 'Edit',
-                      color: AppColors.primary,
-                      icon: Icons.check,
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          Get.showSnackbar(const GetSnackBar(
-                            title: 'Edited',
-                            message: 'The order is edited successfully',
-                          ));
-                        }
-                      }),
-                  AppSpacing.h16,
-                  CustomButton(
-                      text: 'Delete',
-                      color: Colors.redAccent,
-                      icon: Icons.delete,
-                      onPressed: () {
-                        Get.showSnackbar(const GetSnackBar(
-                          title: 'Deleted',
-                          message: 'The order is deleted successfully',
-                        ));
-                      })
-                ],
-              )
+              CustomButton(
+                  text: 'Save',
+                  color: AppColors.primary,
+                  icon: Icons.check,
+                  onPressed: () async {
+                    await editOrder();
+                  })
             ],
           ),
         ),
       ),
     );
+  }
+
+  Future<void> editOrder() async {
+    if (_formKey.currentState!.validate()) {
+      final prefs = await SharedPreferences.getInstance();
+      int salesmanID = prefs.getInt('salesman_id')!;
+      _formKey.currentState!.save();
+      Order newOrder = Order(
+        productId: selectedProduct.value.id,
+        customerId: selectedCustomer.value.id,
+        salesmanId: salesmanID,
+        qty: qty,
+        date: date,
+        id: selectedOrder.id, // Assuming ID is auto-generated
+      );
+      int responseCode = await OrderSqlManager.editOrder(newOrder);
+      if (responseCode == 200) {
+        Get.snackbar(
+          'Edited Successfully',
+          'The order is edited successfully',
+        );
+      } else {
+        Get.snackbar(
+          '$responseCode',
+          'Please try again later',
+        );
+      }
+    }
   }
 }

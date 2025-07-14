@@ -1,4 +1,5 @@
 import 'package:click_happysoft_app/routing/app_routes.dart';
+import 'package:click_happysoft_app/ui_commonwidgets/common_constants.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/primary_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,6 +13,15 @@ class MainMenuPage extends StatefulWidget {
 }
 
 class _MainMenuPageState extends State<MainMenuPage> {
+  Future<Map<String, String>> getSalesmanData() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Get saved values
+    String email = prefs.getString('salesman_email')!;
+    String name = prefs.getString('salesman_name')!;
+    return {'email': email, 'name': name};
+  }
+
   final List<Map<String, dynamic>> menuItems = [
     {
       'icon': Icons.logout,
@@ -19,30 +29,45 @@ class _MainMenuPageState extends State<MainMenuPage> {
       'onTap': () async {
         final prefs = await SharedPreferences.getInstance();
         await prefs.remove('is_logged_in');
+        await prefs.remove('salesman_email');
+        await prefs.remove('salesman_id');
+        await prefs.remove('salesman_name');
         Get.offAndToNamed(AppRoutes.login);
       }
     },
     {'icon': Icons.settings, 'title': 'Settings'},
     {'icon': Icons.add_circle_outline, 'title': 'Add account'}
   ];
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return PrimaryScaffold(
         body: Scaffold(
-      backgroundColor: Colors.black,
       body: SafeArea(
         child: Column(
           children: [
             // Header with profile
-            const ListTile(
-              leading: const CircleAvatar(
-                backgroundImage: NetworkImage(
-                    'https://www.w3schools.com/howto/img_avatar.png'),
-              ),
-              title: Text('Sarbasis Basu'),
-              subtitle: Text('@sarbasisbasu5277',
-                  style: TextStyle(color: Colors.grey)),
-              trailing: Icon(Icons.chevron_right),
+            FutureBuilder(
+              future: getSalesmanData(),
+              builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                return ListTile(
+                  leading: const CircleAvatar(
+                    backgroundImage: NetworkImage(
+                        'https://www.w3schools.com/howto/img_avatar.png'),
+                  ),
+                  title: Text(snapshot.data['name'] ?? 'Salesman Name',
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Text(
+                      snapshot.data['email'] ?? 'example@example.com',
+                      style: const TextStyle(color: Colors.grey)),
+                  trailing: const Icon(Icons.chevron_right),
+                );
+              },
             ),
 
             const Divider(),
@@ -56,32 +81,17 @@ class _MainMenuPageState extends State<MainMenuPage> {
                     return Divider(color: Colors.grey[700]);
                   }
                   return ListTile(
-                    leading: Icon(item['icon'], color: Colors.white),
+                    leading: Icon(item['icon'], color: AppColors.black),
                     title: Text(item['title']),
                     onTap: () {
-                      item['onTap']();
+                      item['onTap'] != null
+                          ? item['onTap']()
+                          : Get.snackbar('Info', 'Processing');
                     },
                   );
                 },
               ),
             ),
-
-            const Divider(),
-
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Privacy Policy', style: TextStyle(color: Colors.grey)),
-                  SizedBox(width: 10),
-                  Text('|', style: TextStyle(color: Colors.grey)),
-                  SizedBox(width: 10),
-                  Text('Terms of Service',
-                      style: TextStyle(color: Colors.grey)),
-                ],
-              ),
-            )
           ],
         ),
       ),

@@ -1,3 +1,4 @@
+import 'package:click_happysoft_app/orders_page/Pages/orders.dart';
 import 'package:click_happysoft_app/routing/app_routes.dart';
 import 'package:click_happysoft_app/routing/bottom_navbar.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +6,8 @@ import 'package:get/get.dart';
 
 void main() {
   Get.put(NavController()); // Inject controller globally
+  Get.put(OrdersListController()); // 👈 Global access
+
   runApp(const MyApp());
 }
 

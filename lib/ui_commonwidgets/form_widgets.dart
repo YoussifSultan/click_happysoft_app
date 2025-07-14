@@ -186,19 +186,19 @@ class CustomCombobox extends StatefulWidget {
   final String? errorText;
   final IconData? icon;
   final List<dynamic> dataList;
-  final Rx<dynamic> selectedData;
+  final Function onSelected;
 
   const CustomCombobox({
     super.key,
     required this.dataList,
-    required this.selectedData,
     required this.label,
     required this.helperText,
-    this.text,
+    this.text = "",
     this.validator,
     this.errorText,
     this.icon,
     this.suffixText = "",
+    required this.onSelected,
   });
 
   @override
@@ -231,7 +231,9 @@ class _CustomComboboxState extends State<CustomCombobox> {
               customer.name.toLowerCase().contains(search.toLowerCase()))
           .toList(),
       builder: (context, controller, focusNode) {
-        ever(widget.selectedData, (val) => controller.text = val.name);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          controller.text = widget.text!;
+        });
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Column(
@@ -273,8 +275,8 @@ class _CustomComboboxState extends State<CustomCombobox> {
         );
       },
       showOnFocus: true,
-      onSelected: (customer) {
-        widget.selectedData.value = customer;
+      onSelected: (val) {
+        widget.onSelected(val);
       },
     );
   }

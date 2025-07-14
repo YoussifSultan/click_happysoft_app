@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:click_happysoft_app/orders_page/Pages/orders.dart';
+import 'package:click_happysoft_app/orders_page/Viewmodels/ordersfulldata.dart';
 import 'package:click_happysoft_app/orders_page/classes/customer_class.dart';
 import 'package:click_happysoft_app/orders_page/classes/orders_class.dart';
 import 'package:click_happysoft_app/orders_page/classes/product_class.dart';
@@ -6,6 +10,7 @@ import 'package:click_happysoft_app/ui_commonwidgets/common_constants.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/form_widgets.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/secondary_scaffold.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -57,7 +62,10 @@ class _AddNewOrderPageState extends State<AddNewOrderPage> {
                     return Obx(
                       () => CustomCombobox(
                         dataList: customersList,
-                        selectedData: selectedCustomer,
+                        text: selectedCustomer.value.name,
+                        onSelected: (customer) {
+                          selectedCustomer.value = customer;
+                        },
                         suffixText: 'ID: ${selectedCustomer.value.id}',
                         icon: Icons.person,
                         label: 'Customer Name',
@@ -73,7 +81,10 @@ class _AddNewOrderPageState extends State<AddNewOrderPage> {
                         dataList: productsList,
                         icon: Icons.category,
                         suffixText: 'ID: ${selectedProduct.value.id}',
-                        selectedData: selectedProduct,
+                        text: selectedProduct.value.name,
+                        onSelected: (product) {
+                          selectedProduct.value = product;
+                        },
                         label: 'Product Name',
                         helperText: 'Choose Product',
                       ),
@@ -132,13 +143,26 @@ class _AddNewOrderPageState extends State<AddNewOrderPage> {
         date: date,
         id: 0, // Assuming ID is auto-generated
       );
-      int responseCode = await OrderSqlManager.addnewOrder(newOrder);
+      http.Response response = await OrderSqlManager.addnewOrder(newOrder);
+      int responseCode = response.statusCode;
       if (responseCode == 200) {
+        Get.back(); // Navigate back to homepage
         Get.snackbar(
           'Saved Successfully',
           'The order is saved successfully',
         );
+        final orderListController = Get.find<OrdersListController>();
+        orderListController.orders.add(OrderDetailsVM(
+            customerId: selectedCustomer.value.id,
+            customerName: selectedCustomer.value.name,
+            productId: selectedProduct.value.id,
+            productName: selectedProduct.value.name,
+            qty: qty,
+            date: date,
+            id: jsonDecode(response.body)['LAST_INSERT_ID()'],
+            salesmanId: salesmanID));
       } else {
+        Get.back(); // Navigate back to homepage
         Get.snackbar(
           '$responseCode',
           'Please try again later',

@@ -1,8 +1,10 @@
+import 'package:click_happysoft_app/orders_page/Pages/orders.dart';
 import 'package:click_happysoft_app/orders_page/Viewmodels/ordersfulldata.dart';
 import 'package:click_happysoft_app/orders_page/classes/customer_class.dart';
 import 'package:click_happysoft_app/orders_page/classes/orders_class.dart';
 import 'package:click_happysoft_app/orders_page/classes/product_class.dart';
 import 'package:click_happysoft_app/orders_page/order_sql_manager.dart';
+import 'package:click_happysoft_app/routing/app_routes.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/common_constants.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/form_widgets.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/secondary_scaffold.dart';
@@ -20,8 +22,8 @@ class EditOrdersPage extends StatefulWidget {
 class _EditOrdersPageState extends State<EditOrdersPage> {
   final _formKey =
       GlobalKey<FormState>(); // Needed to access and validate the form
-  late Rx<Customer> selectedCustomer;
-  late Rx<Product> selectedProduct;
+  Rx<Customer> selectedCustomer = Customer(id: 0, name: '').obs;
+  Rx<Product> selectedProduct = Product(id: 0, name: '').obs;
   late OrderDetailsVM selectedOrder;
   List<Customer> customersList = [];
   List<Product> productsList = [];
@@ -40,12 +42,10 @@ class _EditOrdersPageState extends State<EditOrdersPage> {
   void initState() {
     final Map<String, dynamic> args = Get.arguments;
     selectedOrder = OrderDetailsVM.fromJson(args);
-    selectedCustomer =
-        Customer(id: selectedOrder.customerId, name: selectedOrder.customerName)
-            .obs;
-    selectedProduct =
-        Product(id: selectedOrder.productId, name: selectedOrder.productName)
-            .obs;
+    selectedCustomer.value = Customer(
+        id: selectedOrder.customerId, name: selectedOrder.customerName);
+    selectedProduct.value =
+        Product(id: selectedOrder.productId, name: selectedOrder.productName);
     super.initState();
   }
 
@@ -66,7 +66,10 @@ class _EditOrdersPageState extends State<EditOrdersPage> {
                     return Obx(
                       () => CustomCombobox(
                         dataList: customersList,
-                        selectedData: selectedCustomer,
+                        text: selectedCustomer.value.name,
+                        onSelected: (customer) {
+                          selectedCustomer.value = customer;
+                        },
                         suffixText: 'ID: ${selectedCustomer.value.id}',
                         icon: Icons.person,
                         label: 'Customer Name',
@@ -82,7 +85,10 @@ class _EditOrdersPageState extends State<EditOrdersPage> {
                         dataList: productsList,
                         icon: Icons.category,
                         suffixText: 'ID: ${selectedProduct.value.id}',
-                        selectedData: selectedProduct,
+                        text: selectedProduct.value.name,
+                        onSelected: (product) {
+                          selectedProduct.value = product;
+                        },
                         label: 'Product Name',
                         helperText: 'Choose Product',
                       ),
@@ -91,7 +97,7 @@ class _EditOrdersPageState extends State<EditOrdersPage> {
               CustomTextBox(
                 label: 'Quantity',
                 helperText: 'Enter Quantity',
-                defaultText: '1',
+                defaultText: selectedOrder.qty.toString(),
                 icon: Icons.numbers,
                 validator: (value) {
                   if (GetUtils.isNullOrBlank(value)!) {
@@ -107,20 +113,34 @@ class _EditOrdersPageState extends State<EditOrdersPage> {
               ),
               DatepickerBox(
                 label: 'Select Order Date',
-                initialDate: DateTime.now(),
+                initialDate: selectedOrder.date,
                 lastDate: DateTime.now(),
                 onSaved: (value) {
                   date = value;
                 },
               ),
               AppSpacing.v16,
-              CustomButton(
-                  text: 'Save',
-                  color: AppColors.primary,
-                  icon: Icons.check,
-                  onPressed: () async {
-                    await editOrder();
-                  })
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CustomButton(
+                      text: 'Edit',
+                      color: AppColors.primary,
+                      icon: Icons.check,
+                      onPressed: () {
+                        editOrder();
+                      }),
+                  AppSpacing.h16,
+                  CustomButton(
+                      text: 'Delete',
+                      color: Colors.redAccent,
+                      icon: Icons.delete,
+                      onPressed: () {
+                        deleteOrder();
+                      })
+                ],
+              )
             ],
           ),
         ),
@@ -142,12 +162,53 @@ class _EditOrdersPageState extends State<EditOrdersPage> {
         id: selectedOrder.id, // Assuming ID is auto-generated
       );
       int responseCode = await OrderSqlManager.editOrder(newOrder);
+
       if (responseCode == 200) {
+        final ordersListController = Get.find<OrdersListController>();
+        ordersListController.updateOrder(
+          ordersListController.orders.indexWhere((o) => o.id == newOrder.id),
+          OrderDetailsVM(
+            id: newOrder.id,
+            productId: newOrder.productId,
+            customerId: newOrder.customerId,
+            salesmanId: newOrder.salesmanId,
+            qty: newOrder.qty,
+            date: newOrder.date,
+            productName: selectedProduct.value.name,
+            customerName: selectedCustomer.value.name,
+          ),
+        );
+        Get.back(); // Navigate back to homepage
         Get.snackbar(
           'Edited Successfully',
           'The order is edited successfully',
         );
       } else {
+        Get.back();
+        Get.snackbar(
+          '$responseCode',
+          'Please try again later',
+        );
+      }
+    }
+  }
+
+  Future<void> deleteOrder() async {
+    if (_formKey.currentState!.validate()) {
+      int responseCode = await OrderSqlManager.deleteOrder(selectedOrder.id);
+      if (responseCode == 200) {
+        final ordersListController = Get.find<OrdersListController>();
+        ordersListController.orders.removeAt(
+          ordersListController.orders
+              .indexWhere((o) => o.id == selectedOrder.id),
+        ); // Delete
+        Get.back(); // Navigate back to homepage
+        Get.snackbar(
+          'Deleted Successfully',
+          'The order is deleted successfully',
+        );
+      } else {
+        Get.back(); // Navigate back to homepage
         Get.snackbar(
           '$responseCode',
           'Please try again later',

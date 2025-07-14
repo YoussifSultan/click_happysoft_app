@@ -3,6 +3,7 @@ import 'package:click_happysoft_app/orders_page/classes/customer_class.dart';
 import 'package:click_happysoft_app/orders_page/classes/orders_class.dart';
 import 'package:click_happysoft_app/orders_page/classes/product_class.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'dart:convert';
 
 import 'package:intl/intl.dart';
@@ -40,7 +41,6 @@ ORDER BY o.order_date DESC
     );
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      print(data);
       return List.generate(data.length, (i) {
         return OrderDetailsVM.fromJson(data[i]);
       });
@@ -101,7 +101,7 @@ Select * from railway.products''',
   /// Saves a new order to the database.
   /// Returns the ressponse code from the server.'
   /// order should be an instance of Order class.
-  static Future<int> addnewOrder(Order order) async {
+  static Future<Response> addnewOrder(Order order) async {
     final url =
         Uri.parse('https://restapi-production-b83a.up.railway.app/action');
     final response = await http.post(
@@ -113,16 +113,11 @@ Select * from railway.products''',
       body: jsonEncode({
         'query': '''
 INSERT INTO orders (product_id, customer_id, salesman_id, qty, order_date)
-VALUES (${order.productId}, ${order.customerId}, ${order.salesmanId}, ${order.qty}, '${order.date.toIso8601String()}');''',
+VALUES (${order.productId}, ${order.customerId}, ${order.salesmanId}, ${order.qty}, '${order.date.toIso8601String()}');
+SELECT LAST_INSERT_ID();''',
       }),
     );
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return 200; // Assuming 200 is the success code
-    } else {
-      final data = jsonDecode(response.body);
-      return response.statusCode;
-    }
+    return response;
   }
 
   /// Edits the existing order in the database.
@@ -150,8 +145,30 @@ WHERE order_id = ${newOrder.id};
       }),
     );
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      print(data);
+      return 200; // Assuming 200 is the success code
+    } else {
+      return response.statusCode;
+    }
+  }
+
+  /// Deletes an order from the database.
+  /// Returns the response code from the server.
+  static Future<int> deleteOrder(int orderID) async {
+    final url =
+        Uri.parse('https://restapi-production-b83a.up.railway.app/action');
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': 'aP_cPLGZW69DTVH96mvDL1qJ5f2PfPY9SlpWox7rkCw'
+      },
+      body: jsonEncode({
+        'query': '''
+DELETE FROM orders
+WHERE order_id = $orderID;''',
+      }),
+    );
+    if (response.statusCode == 200) {
       return 200; // Assuming 200 is the success code
     } else {
       return response.statusCode;

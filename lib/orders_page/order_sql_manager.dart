@@ -11,7 +11,7 @@ import 'package:intl/intl.dart';
 class OrderSqlManager {
   /// Fetches orders from the database and returns a list of Order objects.
   static Future<List<OrderDetailsVM>> fetchAllOrders(int salesmanID) async {
-    final url = Uri.parse('https://restapi-production-b83a.up.railway.app/get');
+    final url = Uri.parse('https://restapi-production-e4e5.up.railway.app/get');
     final response = await http.post(
       url,
       headers: {
@@ -39,6 +39,8 @@ ORDER BY o.order_date DESC
 ''',
       }),
     );
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return List.generate(data.length, (i) {
@@ -51,7 +53,7 @@ ORDER BY o.order_date DESC
 
   /// fetch all customers from the database
   static Future<List<Customer>> fetchAllCustomers() async {
-    final url = Uri.parse('https://restapi-production-b83a.up.railway.app/get');
+    final url = Uri.parse('https://restapi-production-e4e5.up.railway.app/get');
     final response = await http.post(
       url,
       headers: {
@@ -76,7 +78,7 @@ Select * from railway.customers
 
   /// fetch all products from the database
   static Future<List<Product>> fetchAllProducts() async {
-    final url = Uri.parse('https://restapi-production-b83a.up.railway.app/get');
+    final url = Uri.parse('https://restapi-production-e4e5.up.railway.app/get');
     final response = await http.post(
       url,
       headers: {
@@ -103,7 +105,7 @@ Select * from railway.products''',
   /// order should be an instance of Order class.
   static Future<Response> addnewOrder(Order order) async {
     final url =
-        Uri.parse('https://restapi-production-b83a.up.railway.app/action');
+        Uri.parse('https://restapi-production-e4e5.up.railway.app/insert');
     final response = await http.post(
       url,
       headers: {
@@ -114,9 +116,11 @@ Select * from railway.products''',
         'query': '''
 INSERT INTO orders (product_id, customer_id, salesman_id, qty, order_date)
 VALUES (${order.productId}, ${order.customerId}, ${order.salesmanId}, ${order.qty}, '${order.date.toIso8601String()}');
-SELECT LAST_INSERT_ID();''',
+''',
       }),
     );
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
     return response;
   }
 
@@ -124,7 +128,7 @@ SELECT LAST_INSERT_ID();''',
   /// Returns the response code from the server.
   static Future<int> editOrder(Order newOrder) async {
     final url =
-        Uri.parse('https://restapi-production-b83a.up.railway.app/action');
+        Uri.parse('https://restapi-production-e4e5.up.railway.app/update');
     final response = await http.post(
       url,
       headers: {
@@ -155,7 +159,7 @@ WHERE order_id = ${newOrder.id};
   /// Returns the response code from the server.
   static Future<int> deleteOrder(int orderID) async {
     final url =
-        Uri.parse('https://restapi-production-b83a.up.railway.app/action');
+        Uri.parse('https://restapi-production-e4e5.up.railway.app/delete');
     final response = await http.post(
       url,
       headers: {

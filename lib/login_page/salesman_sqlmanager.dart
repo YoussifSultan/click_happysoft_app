@@ -4,7 +4,7 @@ import 'dart:convert';
 
 class SalesmanSqlManager {
   static Future<Salesman?> checkLogin(String email, String password) async {
-    final url = Uri.parse('https://restapi-production-b83a.up.railway.app/get');
+    final url = Uri.parse('https://restapi-production-e4e5.up.railway.app/get');
     final response = await http.post(
       url,
       headers: {
@@ -16,6 +16,7 @@ class SalesmanSqlManager {
             '''Select * from railway.salesman where email = '$email' and salesman.password ='$password\'''',
       }),
     );
+    print(response.body);
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(response.body);
       if (data.isEmpty) {

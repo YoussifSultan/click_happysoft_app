@@ -22,22 +22,39 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [AppColors.dark, AppColors.light],
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
+      body: Stack(children: [
+        // Background Image
+        Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/images/login_bg.png"), // Your image
+              fit: BoxFit.cover,
+            ),
           ),
         ),
-        child: Center(
+
+        // Semi-transparent overlay (optional for better contrast)
+        Container(
+          color: Colors.black.withOpacity(0.4),
+        ),
+        Container(
+          width: 300,
+          alignment: Alignment.topCenter,
+          height: 150,
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/images/company_logo.png"), // Your image
+            ),
+          ),
+        ),
+
+        Center(
           child: SingleChildScrollView(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 40),
               width: 300,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.white.withOpacity(0.9),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Form(
@@ -121,7 +138,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
         ),
-      ),
+      ]),
     );
   }
 

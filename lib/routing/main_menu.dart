@@ -2,6 +2,7 @@ import 'package:click_happysoft_app/routing/app_routes.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/common_constants.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/primary_scaffold.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -35,8 +36,6 @@ class _MainMenuPageState extends State<MainMenuPage> {
         Get.offAndToNamed(AppRoutes.login);
       }
     },
-    {'icon': Icons.settings, 'title': 'Settings'},
-    {'icon': Icons.add_circle_outline, 'title': 'Add account'}
   ];
 
   @override
@@ -60,8 +59,8 @@ class _MainMenuPageState extends State<MainMenuPage> {
                 }
                 return ListTile(
                   leading: const CircleAvatar(
-                    backgroundImage: NetworkImage(
-                        'https://www.w3schools.com/howto/img_avatar.png'),
+                    backgroundImage:
+                        AssetImage('assets/images/ahmed_khalil.jpg'),
                   ),
                   title: Text(snapshot.data['name'] ?? 'Salesman Name',
                       style: const TextStyle(fontWeight: FontWeight.bold)),
@@ -75,26 +74,26 @@ class _MainMenuPageState extends State<MainMenuPage> {
 
             const Divider(),
             // Menu Items
-            Expanded(
-              child: ListView.builder(
-                itemCount: menuItems.length,
-                itemBuilder: (context, index) {
-                  final item = menuItems[index];
-                  if (item.isEmpty) {
-                    return Divider(color: Colors.grey[700]);
-                  }
-                  return ListTile(
-                    leading: Icon(item['icon'], color: AppColors.black),
-                    title: Text(item['title']),
-                    onTap: () {
-                      item['onTap'] != null
-                          ? item['onTap']()
-                          : Get.snackbar('Info', 'Processing');
-                    },
-                  );
-                },
-              ),
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: menuItems.length,
+              itemBuilder: (context, index) {
+                final item = menuItems[index];
+                if (item.isEmpty) {
+                  return Divider(color: Colors.grey[700]);
+                }
+                return ListTile(
+                  leading: Icon(item['icon'], color: AppColors.black),
+                  title: Text(item['title']),
+                  onTap: () {
+                    item['onTap'] != null
+                        ? item['onTap']()
+                        : Get.snackbar('Info', 'Processing');
+                  },
+                );
+              },
             ),
+            const Divider(),
           ],
         ),
       ),

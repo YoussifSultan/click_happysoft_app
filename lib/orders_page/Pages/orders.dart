@@ -47,28 +47,65 @@ class _OrdersPageState extends State<OrdersPage> {
           ),
         );
       }
-      return ListView.builder(
-          itemCount: orders.length,
-          itemBuilder: (context, index) {
-            final order = orders[index];
-            return ListTile(
-              title: Text(
-                order.customerName,
-                style: const TextStyle(color: AppColors.black, fontSize: 18),
-              ),
-              trailing: Text(
-                DateFormat('dd/MM/yyyy').format(order.date),
-                style: const TextStyle(color: AppColors.gray, fontSize: 13),
-              ),
-              subtitle: Text(
-                "${order.productName} - ${order.qty}",
-                style: const TextStyle(color: AppColors.gray, fontSize: 13),
-              ),
-              onTap: () {
-                Get.toNamed(AppRoutes.editOrder, arguments: order.toMap());
-              },
-            );
-          });
+      return ListView(
+        children: [
+          Expanded(
+            child: ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: orders.length,
+                itemBuilder: (context, index) {
+                  final order = orders[index];
+                  return ListTile(
+                    title: Text(
+                      order.customerName,
+                      style:
+                          const TextStyle(color: AppColors.black, fontSize: 18),
+                    ),
+                    trailing: Text(
+                      DateFormat('dd/MM/yyyy').format(order.date),
+                      style:
+                          const TextStyle(color: AppColors.gray, fontSize: 13),
+                    ),
+                    subtitle: Text(
+                      "${order.productName} - ${order.qty}",
+                      style: const TextStyle(
+                          color: AppColors.primary, fontSize: 13),
+                    ),
+                    onTap: () {
+                      Get.toNamed(AppRoutes.editOrder,
+                          arguments: order.toMap());
+                    },
+                  );
+                }),
+          ),
+          const Divider(),
+          Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: GridView.count(
+                crossAxisCount: 2, // 2 tiles per row
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                children: List.generate(4, (index) {
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(30), // Rounded corners
+                    child: Container(
+                      height: 200, // Greater height
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300], // Optional background color
+                      ),
+                      child: Image.asset(
+                        'assets/products/product${index + 1}.png', // Replace with your image
+                        fit: BoxFit.cover, // Cover entire container
+                      ),
+                    ),
+                  );
+                }),
+              ))
+        ],
+      );
     }));
   }
 }

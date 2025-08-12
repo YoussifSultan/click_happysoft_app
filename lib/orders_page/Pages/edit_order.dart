@@ -1,6 +1,7 @@
 import 'package:click_happysoft_app/orders_page/Pages/orders.dart';
+import 'package:click_happysoft_app/orders_page/Viewmodels/customerVM.dart';
 import 'package:click_happysoft_app/orders_page/Viewmodels/ordersfulldata.dart';
-import 'package:click_happysoft_app/orders_page/classes/customer_class.dart';
+import 'package:click_happysoft_app/customer_page/Classes/customer_class.dart';
 import 'package:click_happysoft_app/orders_page/classes/orders_class.dart';
 import 'package:click_happysoft_app/orders_page/classes/product_class.dart';
 import 'package:click_happysoft_app/orders_page/order_sql_manager.dart';
@@ -21,10 +22,10 @@ class EditOrdersPage extends StatefulWidget {
 class _EditOrdersPageState extends State<EditOrdersPage> {
   final _formKey =
       GlobalKey<FormState>(); // Needed to access and validate the form
-  Rx<Customer> selectedCustomer = Customer(id: 0, name: '').obs;
+  Rx<CustomerVM> selectedCustomer = CustomerVM(id: 0, name: '').obs;
   Rx<Product> selectedProduct = Product(id: 0, name: '').obs;
   late OrderDetailsVM selectedOrder;
-  List<Customer> customersList = [];
+  List<CustomerVM> customersList = [];
   List<Product> productsList = [];
   DateTime date = DateTime.now();
   int qty = 1; // Default quantity
@@ -41,7 +42,7 @@ class _EditOrdersPageState extends State<EditOrdersPage> {
   void initState() {
     final Map<String, dynamic> args = Get.arguments;
     selectedOrder = OrderDetailsVM.fromJson(args);
-    selectedCustomer.value = Customer(
+    selectedCustomer.value = CustomerVM(
         id: selectedOrder.customerId, name: selectedOrder.customerName);
     selectedProduct.value =
         Product(id: selectedOrder.productId, name: selectedOrder.productName);
@@ -96,6 +97,7 @@ class _EditOrdersPageState extends State<EditOrdersPage> {
               CustomTextBox(
                 label: 'Quantity',
                 helperText: 'Enter Quantity',
+                customTextInputAction: TextInputAction.done,
                 defaultText: selectedOrder.qty.toString(),
                 icon: Icons.numbers,
                 validator: (value) {

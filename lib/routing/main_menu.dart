@@ -33,7 +33,14 @@ class _MainMenuPageState extends State<MainMenuPage> {
         await prefs.remove('salesman_id');
         await prefs.remove('salesman_name');
         Get.offAndToNamed(AppRoutes.login);
-      }
+      },
+    },
+    {
+      'icon': Icons.add_circle_outline,
+      'title': 'Add new Customer',
+      'onTap': () async {
+        Get.toNamed(AppRoutes.addnewCustomer);
+      },
     },
   ];
 

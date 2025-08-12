@@ -14,29 +14,19 @@ class SecondaryScaffold extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.light,
         elevation: 0.5,
-        leading: Padding(
-            padding: const EdgeInsets.only(left: 12.0),
-            child: IconButton(
-                onPressed: () {
-                  Get.back();
-                },
-                icon: const Icon(Icons.arrow_back_ios))),
+        leading: Row(
+          children: [
+            Padding(
+                padding: const EdgeInsets.only(left: 12.0),
+                child: IconButton(
+                    onPressed: () {
+                      Get.back();
+                    },
+                    icon: const Icon(Icons.arrow_back_ios))),
+          ],
+        ),
       ),
       body: body,
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Get.toNamed(AppRoutes.addNewOrder);
-        },
-        backgroundColor: AppColors.light,
-        foregroundColor: AppColors.primary,
-        elevation: 6,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(60),
-        ),
-        child: const Icon(Icons.add, size: 28),
-      ),
-      bottomNavigationBar: BottomNavbar(),
     );
   }
 }

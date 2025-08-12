@@ -1,5 +1,6 @@
+import 'package:click_happysoft_app/orders_page/Viewmodels/customerVM.dart';
 import 'package:click_happysoft_app/orders_page/Viewmodels/ordersfulldata.dart';
-import 'package:click_happysoft_app/orders_page/classes/customer_class.dart';
+import 'package:click_happysoft_app/customer_page/Classes/customer_class.dart';
 import 'package:click_happysoft_app/orders_page/classes/orders_class.dart';
 import 'package:click_happysoft_app/orders_page/classes/product_class.dart';
 import 'package:http/http.dart' as http;
@@ -48,7 +49,7 @@ ORDER BY o.order_date DESC
   }
 
   /// fetch all customers from the database
-  static Future<List<Customer>> fetchAllCustomers() async {
+  static Future<List<CustomerVM>> fetchAllCustomers() async {
     final url = Uri.parse('https://restapi-production-e4e5.up.railway.app/get');
     final response = await http.post(
       url,
@@ -58,14 +59,13 @@ ORDER BY o.order_date DESC
       },
       body: jsonEncode({
         'query': '''
-Select * from railway.customers
-''',
+SELECT Customer_ID,English_Name FROM railway.customers;	''',
       }),
     );
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return List.generate(data.length, (i) {
-        return Customer.fromJson(data[i]);
+        return CustomerVM.fromJson(data[i]);
       });
     } else {
       return Future.error('Failed to load data');

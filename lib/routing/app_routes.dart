@@ -1,3 +1,4 @@
+import 'package:click_happysoft_app/customer_page/Pages/addnewcustomer.dart';
 import 'package:click_happysoft_app/login_page/login_page.dart';
 import 'package:click_happysoft_app/orders_page/Pages/addneworder.dart';
 import 'package:click_happysoft_app/orders_page/Pages/edit_order.dart';
@@ -14,6 +15,7 @@ class AppRoutes {
   /// Example: Get.toNamed(AppRoutes.editOrder, arguments: item.toMap());
   static const editOrder = '/orders/edit';
   static const orders = '/orders/';
+  static const addnewCustomer = '/customer/add/';
 
   static const mainmenu = '/menu/';
   static const login = '/login/';
@@ -21,13 +23,17 @@ class AppRoutes {
 
   static final pages = [
     GetPage(
-        name: addNewOrder,
-        transition: Transition.fadeIn,
-        page: () => const AddNewOrderPage()),
-    GetPage(
         name: mainmenu,
         transition: Transition.fadeIn,
         page: () => const MainMenuPage()),
+    GetPage(
+        name: addnewCustomer,
+        transition: Transition.fadeIn,
+        page: () => const AddnewCustomerPage()),
+    GetPage(
+        name: addNewOrder,
+        transition: Transition.fadeIn,
+        page: () => const AddNewOrderPage()),
     GetPage(
         name: orders,
         transition: Transition.fadeIn,
@@ -46,4 +52,12 @@ class AppRoutes {
       page: () => const SplashScreen(),
     ),
   ];
+
+  /// Returns the current route name based on the current route.
+  static String getCurrentRouteName() {
+    final currentRoute = Get.currentRoute;
+    return currentRoute.isNotEmpty
+        ? currentRoute.split('/').last
+        : 'Home'; // Default to 'Home' if no route is found
+  }
 }

@@ -10,12 +10,14 @@ class CustomTextBox extends StatefulWidget {
   final Function? validator;
   final Function? onSaved;
   final String? errorText;
+  final TextInputType? keyboardType;
   final IconData? icon;
   final bool? isMultiline;
   final bool? readonly;
   final bool? isPassword;
   final String? defaultText;
   final String? suffixText;
+  final TextInputAction? customTextInputAction;
 
   const CustomTextBox({
     super.key,
@@ -30,6 +32,8 @@ class CustomTextBox extends StatefulWidget {
     this.isPassword = false,
     this.onSaved,
     this.suffixText = "",
+    this.keyboardType = TextInputType.text,
+    this.customTextInputAction = TextInputAction.next,
   });
 
   @override
@@ -78,7 +82,9 @@ class _CustomTextBoxState extends State<CustomTextBox> {
           TextFormField(
             controller: controller,
             readOnly: widget.readonly!,
-            maxLines: widget.isMultiline! ? 20 : 1,
+            maxLines: widget.isMultiline! ? 3 : 1,
+            keyboardType: widget.keyboardType,
+            textInputAction: widget.customTextInputAction,
             obscureText: widget.isPassword!,
             decoration: InputDecoration(
               hintText: widget.helperText,
@@ -187,6 +193,7 @@ class CustomCombobox extends StatefulWidget {
   final IconData? icon;
   final List<dynamic> dataList;
   final Function onSelected;
+  final TextInputAction? customTextInputAction;
 
   const CustomCombobox({
     super.key,
@@ -199,6 +206,7 @@ class CustomCombobox extends StatefulWidget {
     this.icon,
     this.suffixText = "",
     required this.onSelected,
+    this.customTextInputAction = TextInputAction.next,
   });
 
   @override
@@ -245,6 +253,7 @@ class _CustomComboboxState extends State<CustomCombobox> {
               TextFormField(
                 controller: controller,
                 focusNode: focusNode,
+                textInputAction: widget.customTextInputAction,
                 decoration: InputDecoration(
                   hintText: widget.helperText,
                   suffixText: widget.suffixText,
@@ -271,7 +280,7 @@ class _CustomComboboxState extends State<CustomCombobox> {
       itemBuilder: (context, customer) {
         return ListTile(
           title: Text(customer.name),
-          trailing: Text('${customer.id}'),
+          trailing: Text('${customer.id ?? ''}'),
         );
       },
       showOnFocus: true,

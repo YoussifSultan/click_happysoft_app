@@ -1,8 +1,9 @@
 import 'dart:convert';
 
 import 'package:click_happysoft_app/orders_page/Pages/orders.dart';
+import 'package:click_happysoft_app/orders_page/Viewmodels/customerVM.dart';
 import 'package:click_happysoft_app/orders_page/Viewmodels/ordersfulldata.dart';
-import 'package:click_happysoft_app/orders_page/classes/customer_class.dart';
+import 'package:click_happysoft_app/customer_page/Classes/customer_class.dart';
 import 'package:click_happysoft_app/orders_page/classes/orders_class.dart';
 import 'package:click_happysoft_app/orders_page/classes/product_class.dart';
 import 'package:click_happysoft_app/orders_page/order_sql_manager.dart';
@@ -24,12 +25,12 @@ class AddNewOrderPage extends StatefulWidget {
 class _AddNewOrderPageState extends State<AddNewOrderPage> {
   final _formKey =
       GlobalKey<FormState>(); // Needed to access and validate the form
-  Rx<Customer> selectedCustomer = Customer(id: 0, name: '').obs;
+  Rx<CustomerVM> selectedCustomer = CustomerVM(id: 0, name: '').obs;
   Rx<Product> selectedProduct = Product(id: 0, name: '').obs;
   DateTime date = DateTime.now();
   int qty = 1; // Default quantity
 
-  List<Customer> customersList = [];
+  List<CustomerVM> customersList = [];
   List<Product> productsList = [];
 
   @override
@@ -94,6 +95,7 @@ class _AddNewOrderPageState extends State<AddNewOrderPage> {
                 label: 'Quantity',
                 helperText: 'Enter Quantity',
                 defaultText: '1',
+                customTextInputAction: TextInputAction.done,
                 icon: Icons.numbers,
                 validator: (value) {
                   if (GetUtils.isNullOrBlank(value)!) {

@@ -6,8 +6,6 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'dart:convert';
 
-import 'package:intl/intl.dart';
-
 class OrderSqlManager {
   /// Fetches orders from the database and returns a list of Order objects.
   static Future<List<OrderDetailsVM>> fetchAllOrders(int salesmanID) async {
@@ -39,8 +37,6 @@ ORDER BY o.order_date DESC
 ''',
       }),
     );
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return List.generate(data.length, (i) {
@@ -119,8 +115,6 @@ VALUES (${order.productId}, ${order.customerId}, ${order.salesmanId}, ${order.qt
 ''',
       }),
     );
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
     return response;
   }
 

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "320701964285",
+    "project_id": "fineseeds-click-project",
+    "storage_bucket": "fineseeds-click-project.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:320701964285:android:4e75481033eaf5f6bf4394",
+        "android_client_info": {
+          "package_name": "com.click.fineseeds"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbJj2gHqF_AfmB9MrmHeFonr6G4Tine9Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

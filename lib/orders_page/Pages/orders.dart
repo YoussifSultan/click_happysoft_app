@@ -5,8 +5,6 @@ import 'package:click_happysoft_app/ui_commonwidgets/common_constants.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/primary_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/get_navigation.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -31,7 +29,6 @@ class _OrdersPageState extends State<OrdersPage> {
     List<OrderDetailsVM> orders =
         await OrderSqlManager.fetchAllOrders(salesmanID);
     orderListController.orders.assignAll(orders);
-    print("Fetched ${orders.length} orders for salesman ID $salesmanID");
     return orders;
   }
 
@@ -49,36 +46,32 @@ class _OrdersPageState extends State<OrdersPage> {
       }
       return ListView(
         children: [
-          Expanded(
-            child: ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: orders.length,
-                itemBuilder: (context, index) {
-                  final order = orders[index];
-                  return ListTile(
-                    title: Text(
-                      order.customerName,
-                      style:
-                          const TextStyle(color: AppColors.black, fontSize: 18),
-                    ),
-                    trailing: Text(
-                      DateFormat('dd/MM/yyyy').format(order.date),
-                      style:
-                          const TextStyle(color: AppColors.gray, fontSize: 13),
-                    ),
-                    subtitle: Text(
-                      "${order.productName} - ${order.qty}",
-                      style: const TextStyle(
-                          color: AppColors.primary, fontSize: 13),
-                    ),
-                    onTap: () {
-                      Get.toNamed(AppRoutes.editOrder,
-                          arguments: order.toMap());
-                    },
-                  );
-                }),
-          ),
+          ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: orders.length,
+              itemBuilder: (context, index) {
+                final order = orders[index];
+                return ListTile(
+                  title: Text(
+                    order.customerName,
+                    style:
+                        const TextStyle(color: AppColors.black, fontSize: 18),
+                  ),
+                  trailing: Text(
+                    DateFormat('dd/MM/yyyy').format(order.date),
+                    style: const TextStyle(color: AppColors.gray, fontSize: 13),
+                  ),
+                  subtitle: Text(
+                    "${order.productName} - ${order.qty}",
+                    style:
+                        const TextStyle(color: AppColors.primary, fontSize: 13),
+                  ),
+                  onTap: () {
+                    Get.toNamed(AppRoutes.editOrder, arguments: order.toMap());
+                  },
+                );
+              }),
           const Divider(),
           Padding(
               padding: const EdgeInsets.all(12.0),

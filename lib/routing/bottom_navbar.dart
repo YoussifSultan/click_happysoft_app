@@ -14,7 +14,7 @@ class BottomNavbar extends StatelessWidget {
     return Obx(
       () => AnimatedBottomNavigationBar(
           icons: const [
-            Icons.document_scanner,
+            Icons.home,
             Icons.menu,
           ],
           activeIndex: navController.selectedIndex.value,

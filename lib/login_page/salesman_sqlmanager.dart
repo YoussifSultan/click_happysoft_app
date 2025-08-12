@@ -16,7 +16,6 @@ class SalesmanSqlManager {
             '''Select * from railway.salesman where email = '$email' and salesman.password ='$password\'''',
       }),
     );
-    print(response.body);
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(response.body);
       if (data.isEmpty) {

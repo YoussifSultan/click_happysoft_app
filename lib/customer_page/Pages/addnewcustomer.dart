@@ -3,8 +3,8 @@ import 'package:click_happysoft_app/customer_page/Classes/customer_type.dart';
 import 'package:click_happysoft_app/customer_page/customer_sql_manager.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/common_constants.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/form_widgets.dart';
+import 'package:click_happysoft_app/ui_commonwidgets/menu_item.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/secondary_scaffold.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -69,7 +69,7 @@ class _AddnewCustomerPageState extends State<AddnewCustomerPage> {
               },
             ),
             CustomCombobox(
-                dataList: ['Customer'],
+                dataList: [MenuItemObject(title: 'Customer', id: 1)],
                 label: 'Category',
                 text: category,
                 helperText: 'Choose Category',
@@ -77,7 +77,10 @@ class _AddnewCustomerPageState extends State<AddnewCustomerPage> {
                   category = value;
                 }),
             CustomCombobox(
-                dataList: CustomerType.customerTypes,
+                dataList: CustomerType.customerTypes
+                    .map((customerType) => MenuItemObject(
+                        title: customerType.customerType, id: customerType.id))
+                    .toList(),
                 label: 'Customer Type',
                 text: customerType.customerType,
                 helperText: 'Choose Customer Type',

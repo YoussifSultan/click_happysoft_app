@@ -1,12 +1,12 @@
 import 'package:click_happysoft_app/orders_page/Pages/orders.dart';
 import 'package:click_happysoft_app/orders_page/Viewmodels/customerVM.dart';
 import 'package:click_happysoft_app/orders_page/Viewmodels/ordersfulldata.dart';
-import 'package:click_happysoft_app/customer_page/Classes/customer_class.dart';
 import 'package:click_happysoft_app/orders_page/classes/orders_class.dart';
 import 'package:click_happysoft_app/orders_page/classes/product_class.dart';
 import 'package:click_happysoft_app/orders_page/order_sql_manager.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/common_constants.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/form_widgets.dart';
+import 'package:click_happysoft_app/ui_commonwidgets/menu_item.dart';
 import 'package:click_happysoft_app/ui_commonwidgets/secondary_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -65,7 +65,10 @@ class _EditOrdersPageState extends State<EditOrdersPage> {
                   builder: (context, snapshot) {
                     return Obx(
                       () => CustomCombobox(
-                        dataList: customersList,
+                        dataList: customersList
+                            .map((customer) => MenuItemObject(
+                                title: customer.name, id: customer.id))
+                            .toList(),
                         text: selectedCustomer.value.name,
                         onSelected: (customer) {
                           selectedCustomer.value = customer;
@@ -82,7 +85,10 @@ class _EditOrdersPageState extends State<EditOrdersPage> {
                   builder: (context, snapshot) {
                     return Obx(
                       () => CustomCombobox(
-                        dataList: productsList,
+                        dataList: productsList
+                            .map((product) => MenuItemObject(
+                                title: product.name, id: product.id))
+                            .toList(),
                         icon: Icons.category,
                         suffixText: 'ID: ${selectedProduct.value.id}',
                         text: selectedProduct.value.name,

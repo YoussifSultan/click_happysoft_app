@@ -1,4 +1,5 @@
 import 'package:click_happysoft_app/ui_commonwidgets/common_constants.dart';
+import 'package:click_happysoft_app/ui_commonwidgets/menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
@@ -191,7 +192,7 @@ class CustomCombobox extends StatefulWidget {
   final Function? validator;
   final String? errorText;
   final IconData? icon;
-  final List<dynamic> dataList;
+  final List<MenuItemObject> dataList;
   final Function onSelected;
   final TextInputAction? customTextInputAction;
 
@@ -235,8 +236,8 @@ class _CustomComboboxState extends State<CustomCombobox> {
   Widget build(BuildContext context) {
     return TypeAheadField<dynamic>(
       suggestionsCallback: (search) => widget.dataList
-          .where((customer) =>
-              customer.name.toLowerCase().contains(search.toLowerCase()))
+          .where((menuItem) =>
+              menuItem.title.toLowerCase().contains(search.toLowerCase()))
           .toList(),
       builder: (context, controller, focusNode) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -277,10 +278,10 @@ class _CustomComboboxState extends State<CustomCombobox> {
           ),
         );
       },
-      itemBuilder: (context, customer) {
+      itemBuilder: (context, object) {
         return ListTile(
-          title: Text(customer.name),
-          trailing: Text('${customer.id ?? ''}'),
+          title: Text(object.name),
+          trailing: Text('${object.id ?? ''}'),
         );
       },
       showOnFocus: true,

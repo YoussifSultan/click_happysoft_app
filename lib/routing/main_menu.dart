@@ -1,6 +1,6 @@
 import 'package:click_happysoft_app/routing/app_routes.dart';
-import 'package:click_happysoft_app/ui_commonwidgets/common_constants.dart';
-import 'package:click_happysoft_app/ui_commonwidgets/primary_scaffold.dart';
+import 'package:click_happysoft_app/constants/common_constants.dart';
+import 'package:click_happysoft_app/constants/scaffolds/primary_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,6 +24,39 @@ class _MainMenuPageState extends State<MainMenuPage> {
 
   final List<Map<String, dynamic>> menuItems = [
     {
+      'icon': Icons.person,
+      'title': 'Customer',
+      'children': [
+        {
+          'icon': Icons.add_circle_outline,
+          'title': 'Add new Customer',
+          'onTap': () async {
+            Get.toNamed(AppRoutes.addnewCustomer);
+          },
+        },
+      ],
+    },
+    {
+      'icon': Icons.shopping_basket_outlined,
+      'title': 'Orders',
+      'children': [
+        {
+          'icon': Icons.add_circle_outline,
+          'title': 'Add new Order',
+          'onTap': () async {
+            Get.toNamed(AppRoutes.addNewOrder);
+          },
+        },
+        {
+          'icon': Icons.list_alt,
+          'title': 'View Orders',
+          'onTap': () async {
+            Get.toNamed(AppRoutes.orders);
+          },
+        },
+      ],
+    },
+    {
       'icon': Icons.logout,
       'title': 'Log out',
       'onTap': () async {
@@ -33,13 +66,6 @@ class _MainMenuPageState extends State<MainMenuPage> {
         await prefs.remove('salesman_id');
         await prefs.remove('salesman_name');
         Get.offAndToNamed(AppRoutes.login);
-      },
-    },
-    {
-      'icon': Icons.add_circle_outline,
-      'title': 'Add new Customer',
-      'onTap': () async {
-        Get.toNamed(AppRoutes.addnewCustomer);
       },
     },
   ];
@@ -82,12 +108,28 @@ class _MainMenuPageState extends State<MainMenuPage> {
             // Menu Items
             ListView.builder(
               shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: menuItems.length,
               itemBuilder: (context, index) {
                 final item = menuItems[index];
-                if (item.isEmpty) {
-                  return Divider(color: Colors.grey[700]);
+
+                // If item has children → make expandable
+                if (item.containsKey('children')) {
+                  return ExpansionTile(
+                    leading: Icon(item['icon'], color: AppColors.black),
+                    title: Text(item['title']),
+                    children: (item['children'] as List<Map<String, dynamic>>)
+                        .map((child) => ListTile(
+                              leading:
+                                  Icon(child['icon'], color: AppColors.black),
+                              title: Text(child['title']),
+                              onTap: child['onTap'],
+                            ))
+                        .toList(),
+                  );
                 }
+
+                // Normal non-expandable item
                 return ListTile(
                   leading: Icon(item['icon'], color: AppColors.black),
                   title: Text(item['title']),

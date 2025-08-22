@@ -4,10 +4,10 @@ import 'package:click_happysoft_app/orders_page/Viewmodels/ordersfulldata.dart';
 import 'package:click_happysoft_app/orders_page/classes/orders_class.dart';
 import 'package:click_happysoft_app/orders_page/classes/product_class.dart';
 import 'package:click_happysoft_app/orders_page/order_sql_manager.dart';
-import 'package:click_happysoft_app/ui_commonwidgets/common_constants.dart';
-import 'package:click_happysoft_app/ui_commonwidgets/form_widgets.dart';
-import 'package:click_happysoft_app/ui_commonwidgets/menu_item.dart';
-import 'package:click_happysoft_app/ui_commonwidgets/secondary_scaffold.dart';
+import 'package:click_happysoft_app/constants/common_constants.dart';
+import 'package:click_happysoft_app/constants/ui_constants/form_widgets.dart';
+import 'package:click_happysoft_app/constants/ui_constants/combobox.dart';
+import 'package:click_happysoft_app/constants/scaffolds/secondary_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -66,12 +66,13 @@ class _EditOrdersPageState extends State<EditOrdersPage> {
                     return Obx(
                       () => CustomCombobox(
                         dataList: customersList
-                            .map((customer) => MenuItemObject(
+                            .map((customer) => CustomComboboxitem(
                                 title: customer.name, id: customer.id))
                             .toList(),
                         text: selectedCustomer.value.name,
                         onSelected: (customer) {
-                          selectedCustomer.value = customer;
+                          selectedCustomer.value =
+                              CustomerVM(id: customer.id, name: customer.title);
                         },
                         suffixText: 'ID: ${selectedCustomer.value.id}',
                         icon: Icons.person,
@@ -86,14 +87,15 @@ class _EditOrdersPageState extends State<EditOrdersPage> {
                     return Obx(
                       () => CustomCombobox(
                         dataList: productsList
-                            .map((product) => MenuItemObject(
+                            .map((product) => CustomComboboxitem(
                                 title: product.name, id: product.id))
                             .toList(),
                         icon: Icons.category,
                         suffixText: 'ID: ${selectedProduct.value.id}',
                         text: selectedProduct.value.name,
                         onSelected: (product) {
-                          selectedProduct.value = product;
+                          selectedProduct.value =
+                              Product(id: product.id, name: product.title);
                         },
                         label: 'Product Name',
                         helperText: 'Choose Product',

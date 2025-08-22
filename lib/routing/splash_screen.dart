@@ -23,7 +23,7 @@ class _SplashScreenState extends State<SplashScreen> {
     final isLoggedIn = prefs.getBool('is_logged_in') ?? false;
 
     if (isLoggedIn) {
-      Get.offAndToNamed(AppRoutes.orders);
+      Get.offAndToNamed(AppRoutes.dashboard);
     } else {
       Get.offAndToNamed(AppRoutes.login);
     }

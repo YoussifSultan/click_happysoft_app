@@ -2,6 +2,7 @@ import 'package:click_happysoft_app/customer_page/Classes/customer_type.dart';
 
 class Customer {
   int customerID;
+  int salesmanID;
   String arabicName;
   String englishName;
   String category;
@@ -18,6 +19,7 @@ class Customer {
 
   Customer({
     required this.customerID,
+    required this.salesmanID,
     required this.arabicName,
     required this.englishName,
     required this.category,
@@ -37,6 +39,7 @@ class Customer {
   factory Customer.fromJson(Map<String, dynamic> json) {
     return Customer(
       customerID: json['Customer_ID'] ?? 0,
+      salesmanID: json['salesman_ID'] ?? 0,
       arabicName: json['Arabic_Name'] ?? '',
       englishName: json['English_Name'] ?? '',
       category: json['Category'] ?? '',
@@ -58,6 +61,7 @@ class Customer {
   Map<String, dynamic> toJson() {
     return {
       'Customer_ID': customerID,
+      'salesman_ID': salesmanID,
       'Arabic_Name': arabicName,
       'English_Name': englishName,
       'Category': category,
@@ -76,11 +80,12 @@ class Customer {
 
   @override
   String toString() {
-    return 'Customer(customerCode: $customerID, arabicName: $arabicName, '
-        'englishName: $englishName,  category: $category, '
-        'customerType: $customerType, mobile: $mobile, faxNumber: $faxNumber, '
-        'phone: $phone, email: $email,  website: $website, '
-        'address: $address, shippingAddress: $shippingAddress, '
-        'nationalIdNumber: $nationalIdNumber , isValid: $isValid)';
+    return 'Customer(customerID: $customerID, salesmanID: $salesmanID, '
+        'arabicName: $arabicName, englishName: $englishName, '
+        'category: $category, customerType: $customerType, '
+        'mobile: $mobile, faxNumber: $faxNumber, phone: $phone, '
+        'email: $email, website: $website, address: $address, '
+        'shippingAddress: $shippingAddress, nationalIdNumber: $nationalIdNumber, '
+        'isValid: $isValid)';
   }
 }

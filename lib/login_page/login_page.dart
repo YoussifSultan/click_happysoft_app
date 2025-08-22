@@ -1,8 +1,8 @@
 import 'package:click_happysoft_app/login_page/classes/salesman.dart';
 import 'package:click_happysoft_app/login_page/salesman_sqlmanager.dart';
 import 'package:click_happysoft_app/routing/app_routes.dart';
-import 'package:click_happysoft_app/ui_commonwidgets/common_constants.dart';
-import 'package:click_happysoft_app/ui_commonwidgets/form_widgets.dart';
+import 'package:click_happysoft_app/constants/common_constants.dart';
+import 'package:click_happysoft_app/constants/ui_constants/form_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';

@@ -1,4 +1,5 @@
 import 'package:click_happysoft_app/customer_page/Pages/addnewcustomer.dart';
+import 'package:click_happysoft_app/dashboard_page/Pages/dashboard.dart';
 import 'package:click_happysoft_app/login_page/login_page.dart';
 import 'package:click_happysoft_app/orders_page/Pages/addneworder.dart';
 import 'package:click_happysoft_app/orders_page/Pages/edit_order.dart';
@@ -18,6 +19,7 @@ class AppRoutes {
   static const addnewCustomer = '/customer/add/';
 
   static const mainmenu = '/menu/';
+  static const dashboard = '/dashboard/';
   static const login = '/login/';
   static const splashScreen = '/splash/';
 
@@ -51,13 +53,21 @@ class AppRoutes {
       transition: Transition.fadeIn,
       page: () => const SplashScreen(),
     ),
+    GetPage(
+      name: dashboard,
+      transition: Transition.fadeIn,
+      page: () => const Dashboard(),
+    ),
   ];
 
   /// Returns the current route name based on the current route.
   static String getCurrentRouteName() {
     final currentRoute = Get.currentRoute;
     return currentRoute.isNotEmpty
-        ? currentRoute.split('/').last
-        : 'Home'; // Default to 'Home' if no route is found
+        ? currentRoute
+            .replaceFirst('/', '')
+            .replaceAll('/', "-")
+            .capitalize! // Capitalize first letter
+        : 'Dashboard'; // Default to 'Home' if no route is found
   }
 }

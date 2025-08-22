@@ -18,8 +18,8 @@ class CustomerSqlManager {
       },
       body: jsonEncode({
         'query': '''
-INSERT INTO customers (Customer_ID, Arabic_Name, English_Name, Category, Customer_Type, Mobile, Fax_Number, Phone, Email, Website, Address, Shipping_Address, National_ID_Number,Is_Valid)
-VALUES (0, N'${customer.arabicName}', '${customer.englishName}', '${customer.category}', '${customer.customerType.id}', '${customer.mobile}', '${customer.faxNumber}', '${customer.phone}', '${customer.email}', '${customer.website}', '${customer.address}', '${customer.shippingAddress}', '${customer.nationalIdNumber}', ${customer.isValid ? 1 : 0});
+INSERT INTO customers (salesman_ID, Arabic_Name, English_Name, Category, Customer_Type, Mobile, Fax_Number, Phone, Email, Website, Address, Shipping_Address, National_ID_Number, approval_status) 
+VALUES (${customer.salesmanID}, '${customer.arabicName}', '${customer.englishName}', '${customer.category}', ${customer.customerType.id}, '${customer.mobile}', '${customer.faxNumber}', '${customer.phone}', '${customer.email}', '${customer.website}', '${customer.address}', '${customer.shippingAddress}', '${customer.nationalIdNumber}', ${customer.isValid ? 1 : 0});
 ''',
       }),
     );

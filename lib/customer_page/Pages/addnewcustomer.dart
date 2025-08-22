@@ -1,13 +1,14 @@
 import 'package:click_happysoft_app/customer_page/Classes/customer_class.dart';
 import 'package:click_happysoft_app/customer_page/Classes/customer_type.dart';
 import 'package:click_happysoft_app/customer_page/customer_sql_manager.dart';
-import 'package:click_happysoft_app/ui_commonwidgets/common_constants.dart';
-import 'package:click_happysoft_app/ui_commonwidgets/form_widgets.dart';
-import 'package:click_happysoft_app/ui_commonwidgets/menu_item.dart';
-import 'package:click_happysoft_app/ui_commonwidgets/secondary_scaffold.dart';
+import 'package:click_happysoft_app/constants/common_constants.dart';
+import 'package:click_happysoft_app/constants/ui_constants/form_widgets.dart';
+import 'package:click_happysoft_app/constants/ui_constants/combobox.dart';
+import 'package:click_happysoft_app/constants/scaffolds/secondary_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddnewCustomerPage extends StatefulWidget {
   const AddnewCustomerPage({super.key});
@@ -46,7 +47,7 @@ class _AddnewCustomerPageState extends State<AddnewCustomerPage> {
             CustomTextBox(
               label: 'Arabic Name',
               helperText: 'Enter Arabic Name',
-              icon: Icons.person,
+              icon: Icons.language,
               validator: (value) {
                 if (GetUtils.isNullOrBlank(value)!) {
                   return 'Arabic Name is required';
@@ -60,7 +61,7 @@ class _AddnewCustomerPageState extends State<AddnewCustomerPage> {
             CustomTextBox(
               label: 'English Name',
               helperText: 'Enter English Name',
-              icon: Icons.person,
+              icon: Icons.abc_outlined,
               validator: (value) {
                 return null;
               },
@@ -69,23 +70,26 @@ class _AddnewCustomerPageState extends State<AddnewCustomerPage> {
               },
             ),
             CustomCombobox(
-                dataList: [MenuItemObject(title: 'Customer', id: 1)],
+                dataList: [CustomComboboxitem(title: 'Customer', id: 1)],
                 label: 'Category',
+                icon: Icons.category,
                 text: category,
                 helperText: 'Choose Category',
                 onSelected: (value) {
-                  category = value;
+                  category = value.title;
                 }),
             CustomCombobox(
                 dataList: CustomerType.customerTypes
-                    .map((customerType) => MenuItemObject(
+                    .map((customerType) => CustomComboboxitem(
                         title: customerType.customerType, id: customerType.id))
                     .toList(),
                 label: 'Customer Type',
                 text: customerType.customerType,
+                icon: Icons.factory_outlined,
                 helperText: 'Choose Customer Type',
                 onSelected: (value) {
-                  customerType = value;
+                  customerType = CustomerType.customerTypes
+                      .firstWhere((c) => c.id == value.id);
                 }),
             CustomTextBox(
               label: 'Mobile',
@@ -222,7 +226,10 @@ class _AddnewCustomerPageState extends State<AddnewCustomerPage> {
   Future<void> saveNewOrder() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+      final prefs = await SharedPreferences.getInstance();
+      int salesmanID = prefs.getInt('salesman_id')!;
       Customer newCustomer = Customer(
+        salesmanID: salesmanID,
         arabicName: arabicName,
         englishName: englishName,
         category: category,

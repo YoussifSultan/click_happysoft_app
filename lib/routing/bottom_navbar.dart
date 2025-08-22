@@ -1,6 +1,6 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:click_happysoft_app/routing/app_routes.dart';
-import 'package:click_happysoft_app/ui_commonwidgets/common_constants.dart';
+import 'package:click_happysoft_app/constants/common_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -18,9 +18,9 @@ class BottomNavbar extends StatelessWidget {
             Icons.menu,
           ],
           activeIndex: navController.selectedIndex.value,
-          activeColor: AppColors.primary,
           gapLocation: GapLocation.center,
-          notchSmoothness: NotchSmoothness.softEdge,
+          notchSmoothness: NotchSmoothness.smoothEdge,
+          activeColor: AppColors.primary,
           onTap: (index) {
             navController.changePage(index);
           }),
@@ -31,7 +31,7 @@ class BottomNavbar extends StatelessWidget {
 class NavController extends GetxController {
   var selectedIndex = 0.obs;
 
-  final List<String> pages = [AppRoutes.orders, AppRoutes.mainmenu];
+  final List<String> pages = [AppRoutes.dashboard, AppRoutes.mainmenu];
 
   void changePage(int index) {
     selectedIndex.value = index;

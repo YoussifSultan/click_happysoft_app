@@ -25,8 +25,8 @@ class AddNewOrderPage extends StatefulWidget {
 class _AddNewOrderPageState extends State<AddNewOrderPage> {
   final _formKey =
       GlobalKey<FormState>(); // Needed to access and validate the form
-  Rx<CustomerVM> selectedCustomer = CustomerVM(id: 0, name: '').obs;
-  Rx<Product> selectedProduct = Product(id: 0, name: '').obs;
+  CustomerVM selectedCustomer = CustomerVM(id: 0, name: '');
+  Product selectedProduct = Product(id: 0, name: '');
   DateTime date = DateTime.now();
   int qty = 1; // Default quantity
 
@@ -38,7 +38,7 @@ class _AddNewOrderPageState extends State<AddNewOrderPage> {
     super.initState();
   }
 
-  Future<void> initializeCustomer() async {
+  Future<void> initializeCustomers() async {
     customersList = await OrderSqlManager.fetchAllCustomers();
   }
 
@@ -58,45 +58,39 @@ class _AddNewOrderPageState extends State<AddNewOrderPage> {
             children: [
               AppSpacing.v16,
               FutureBuilder(
-                  future: initializeCustomer(),
+                  future: initializeCustomers(),
                   builder: (context, snapshot) {
-                    return Obx(
-                      () => CustomCombobox(
-                        dataList: customersList
-                            .map((customer) => CustomComboboxitem(
-                                title: customer.name, id: customer.id))
-                            .toList(),
-                        text: selectedCustomer.value.name,
-                        onSelected: (customer) {
-                          selectedCustomer.value =
-                              CustomerVM(id: customer.id, name: customer.title);
-                        },
-                        suffixText: 'ID: ${selectedCustomer.value.id}',
-                        icon: Icons.person,
-                        label: 'Customer Name',
-                        helperText: 'Choose Customer',
-                      ),
+                    return CustomCombobox(
+                      dataList: customersList
+                          .map((customer) => CustomComboboxitem(
+                              title: customer.name, id: customer.id))
+                          .toList(),
+                      text: selectedCustomer.name,
+                      onSelected: (customer) {
+                        selectedCustomer =
+                            CustomerVM(id: customer.id, name: customer.title);
+                      },
+                      icon: Icons.person,
+                      label: 'Customer Name',
+                      helperText: 'Choose Customer',
                     );
                   }),
               FutureBuilder(
                   future: initializeProducts(),
                   builder: (context, snapshot) {
-                    return Obx(
-                      () => CustomCombobox(
-                        dataList: productsList
-                            .map((product) => CustomComboboxitem(
-                                title: product.name, id: product.id))
-                            .toList(),
-                        icon: Icons.category,
-                        suffixText: 'ID: ${selectedProduct.value.id}',
-                        text: selectedProduct.value.name,
-                        onSelected: (product) {
-                          selectedProduct.value =
-                              Product(id: product.id, name: product.title);
-                        },
-                        label: 'Product Name',
-                        helperText: 'Choose Product',
-                      ),
+                    return CustomCombobox(
+                      dataList: productsList
+                          .map((product) => CustomComboboxitem(
+                              title: product.name, id: product.id))
+                          .toList(),
+                      icon: Icons.category,
+                      text: selectedProduct.name,
+                      onSelected: (product) {
+                        selectedProduct =
+                            Product(id: product.id, name: product.title);
+                      },
+                      label: 'Product Name',
+                      helperText: 'Choose Product',
                     );
                   }),
               CustomTextBox(
@@ -146,8 +140,8 @@ class _AddNewOrderPageState extends State<AddNewOrderPage> {
       int salesmanID = prefs.getInt('salesman_id')!;
       _formKey.currentState!.save();
       Order newOrder = Order(
-        productId: selectedProduct.value.id,
-        customerId: selectedCustomer.value.id,
+        productId: selectedProduct.id,
+        customerId: selectedCustomer.id,
         salesmanId: salesmanID,
         qty: qty,
         date: date,
@@ -163,10 +157,10 @@ class _AddNewOrderPageState extends State<AddNewOrderPage> {
         );
         final orderListController = Get.find<OrdersListController>();
         orderListController.orders.add(OrderDetailsVM(
-            customerId: selectedCustomer.value.id,
-            customerName: selectedCustomer.value.name,
-            productId: selectedProduct.value.id,
-            productName: selectedProduct.value.name,
+            customerId: selectedCustomer.id,
+            customerName: selectedCustomer.name,
+            productId: selectedProduct.id,
+            productName: selectedProduct.name,
             qty: qty,
             date: date,
             id: jsonDecode(response.body)['last_insert_id'],

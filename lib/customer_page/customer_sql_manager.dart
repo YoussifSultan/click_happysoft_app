@@ -4,9 +4,9 @@ import 'package:http/http.dart';
 import 'dart:convert';
 
 class CustomerSqlManager {
-  /// Saves a new order to the database.
-  /// Returns the ressponse code from the server.'
-  /// order should be an instance of Order class.
+  /// save new customer to the database
+  /// Returns the HTTP response from the server
+  /// You can check the response status code and body for success or failure
   static Future<Response> addNewCustomer(Customer customer) async {
     final url =
         Uri.parse('https://restapi-production-e4e5.up.railway.app/insert');

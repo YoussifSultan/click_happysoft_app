@@ -8,6 +8,7 @@ class CustomTextBox extends StatefulWidget {
   final String? helperText;
   final Function? validator;
   final Function? onSaved;
+  final Function? onTap;
   final String? errorText;
   final TextInputType? keyboardType;
   final IconData? icon;
@@ -33,6 +34,7 @@ class CustomTextBox extends StatefulWidget {
     this.suffixText = "",
     this.keyboardType = TextInputType.text,
     this.customTextInputAction = TextInputAction.next,
+    this.onTap,
   });
 
   @override
@@ -50,7 +52,9 @@ class _CustomTextBoxState extends State<CustomTextBox> {
   @override
   void didUpdateWidget(covariant CustomTextBox oldWidget) {
     if (oldWidget.defaultText != widget.defaultText) {
-      controller.text = widget.defaultText!;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        controller.text = widget.defaultText!;
+      });
     }
     super.didUpdateWidget(oldWidget);
   }
@@ -83,6 +87,11 @@ class _CustomTextBoxState extends State<CustomTextBox> {
             readOnly: widget.readonly!,
             maxLines: widget.isMultiline! ? 3 : 1,
             keyboardType: widget.keyboardType,
+            onTap: () {
+              if (widget.onTap != null) {
+                widget.onTap!();
+              }
+            },
             textInputAction: widget.customTextInputAction,
             obscureText: widget.isPassword!,
             decoration: InputDecoration(
@@ -200,9 +209,9 @@ class DatepickerBox extends StatefulWidget {
 }
 
 class _DatepickerBoxState extends State<DatepickerBox> {
-  final TextEditingController _dateController = TextEditingController();
+  DateTime selectedDate = DateTime.now();
 
-  Future<void> _selectDate(BuildContext context) async {
+  Future<void> _showDatePicker(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: widget.initialDate,
@@ -229,46 +238,32 @@ class _DatepickerBoxState extends State<DatepickerBox> {
 
     if (pickedDate != null) {
       setState(() {
-        _dateController.text = DateFormat('dd/MM/yyyy').format(pickedDate);
+        selectedDate = pickedDate;
       });
     }
   }
 
   @override
   void initState() {
-    _dateController.text = DateFormat('dd/MM/yyyy').format(widget.initialDate);
+    selectedDate = widget.initialDate;
     super.initState();
-  }
-
-  InputBorder _customBorder(Color color) {
-    return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(16),
-      borderSide: BorderSide(color: color, width: 1.5),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        child: TextFormField(
-          controller: _dateController,
-          readOnly: true,
-          decoration: InputDecoration(
-            labelText: widget.label,
-            hintText: 'DD/MM/YYYY',
-            enabledBorder: _customBorder(AppColors.light),
-            focusedBorder: _customBorder(AppColors.primary),
-            suffixIcon: IconButton(
-              icon: const Icon(Icons.calendar_today),
-              onPressed: () => _selectDate(context),
-            ),
-          ),
-          onSaved: (val) {
-            if (widget.onSaved != null) {
-              widget.onSaved!(DateFormat('dd/MM/yyyy').parse(val!));
-            }
-          },
-        ));
+    return CustomTextBox(
+      label: 'Date',
+      readonly: true,
+      onTap: () {
+        _showDatePicker(context);
+      },
+      defaultText: DateFormat('dd/MM/yyyy').format(selectedDate),
+      onSaved: (val) {
+        if (widget.onSaved != null) {
+          widget.onSaved!(DateFormat('dd/MM/yyyy').parse(val!));
+        }
+      },
+      icon: Icons.calendar_today,
+    );
   }
 }

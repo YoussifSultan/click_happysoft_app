@@ -1,3 +1,4 @@
+import 'package:click_happysoft_app/RVrequest_page/addnewRVrequest.dart';
 import 'package:click_happysoft_app/customer_page/Pages/addnewcustomer.dart';
 import 'package:click_happysoft_app/dashboard_page/Pages/dashboard.dart';
 import 'package:click_happysoft_app/login_page/login_page.dart';
@@ -9,19 +10,23 @@ import 'package:click_happysoft_app/routing/splash_screen.dart';
 import 'package:get/get.dart';
 
 class AppRoutes {
-  static const addNewOrder = '/orders/add/';
+  static const String addNewOrder = '/orders/add/';
 
   ///NOTE - Requires Map of Order as arguments in GETx routing
   ///
   /// Example: Get.toNamed(AppRoutes.editOrder, arguments: item.toMap());
-  static const editOrder = '/orders/edit';
-  static const orders = '/orders/';
-  static const addnewCustomer = '/customer/add/';
+  static const String editOrder = '/orders/edit';
+  static const String orders = '/orders/';
 
-  static const mainmenu = '/menu/';
-  static const dashboard = '/dashboard/';
-  static const login = '/login/';
-  static const splashScreen = '/splash/';
+  static const String addnewCustomer = '/customer/add/';
+
+  static const String addnewReceiptVoucherRequest =
+      '/receiptvoucherrequest/add/';
+
+  static const String mainmenu = '/menu/';
+  static const String dashboard = '/dashboard/';
+  static const String login = '/login/';
+  static const String splashScreen = '/splash/';
 
   static final pages = [
     GetPage(
@@ -57,6 +62,11 @@ class AppRoutes {
       name: dashboard,
       transition: Transition.fadeIn,
       page: () => const Dashboard(),
+    ),
+    GetPage(
+      name: addnewReceiptVoucherRequest,
+      transition: Transition.fadeIn,
+      page: () => const Addnewrvrequest(),
     ),
   ];
 

@@ -57,6 +57,19 @@ class _MainMenuPageState extends State<MainMenuPage> {
       ],
     },
     {
+      'icon': Icons.receipt_long,
+      'title': 'Reciept Voucher Request',
+      'children': [
+        {
+          'icon': Icons.add_chart_sharp,
+          'title': 'Add new Cash RV Request',
+          'onTap': () async {
+            Get.toNamed(AppRoutes.addnewReceiptVoucherRequest);
+          },
+        },
+      ],
+    },
+    {
       'icon': Icons.logout,
       'title': 'Log out',
       'onTap': () async {

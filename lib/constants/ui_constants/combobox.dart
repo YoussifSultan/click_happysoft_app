@@ -43,8 +43,10 @@ class CustomCombobox extends StatefulWidget {
 }
 
 class _CustomComboboxState extends State<CustomCombobox> {
+  late final TextEditingController _myController;
   @override
   void initState() {
+    _myController = TextEditingController(text: widget.text);
     super.initState();
   }
 
@@ -62,15 +64,12 @@ class _CustomComboboxState extends State<CustomCombobox> {
 
   @override
   Widget build(BuildContext context) {
-    return TypeAheadField<dynamic>(
+    return TypeAheadField<CustomComboboxitem>(
       suggestionsCallback: (search) => widget.dataList
           .where((menuItem) =>
               menuItem.title.toLowerCase().contains(search.toLowerCase()))
           .toList(),
       builder: (context, controller, focusNode) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          controller.text = widget.text!;
-        });
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Column(
@@ -80,7 +79,7 @@ class _CustomComboboxState extends State<CustomCombobox> {
                   style: const TextStyle(fontWeight: FontWeight.bold)),
               AppSpacing.v4,
               TextFormField(
-                controller: controller,
+                controller: _myController,
                 focusNode: focusNode,
                 textInputAction: widget.customTextInputAction,
                 decoration: InputDecoration(
@@ -109,11 +108,13 @@ class _CustomComboboxState extends State<CustomCombobox> {
       itemBuilder: (context, object) {
         return ListTile(
           title: Text(object.title),
-          trailing: Text('${object.id ?? ''}'),
+          trailing: Text('${object.id}'),
         );
       },
       showOnFocus: true,
+      controller: _myController,
       onSelected: (val) {
+        _myController.text = val.title;
         widget.onSelected(val);
       },
     );

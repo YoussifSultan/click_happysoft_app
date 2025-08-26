@@ -22,8 +22,8 @@ class EditOrdersPage extends StatefulWidget {
 class _EditOrdersPageState extends State<EditOrdersPage> {
   final _formKey =
       GlobalKey<FormState>(); // Needed to access and validate the form
-  Rx<CustomerVM> selectedCustomer = CustomerVM(id: 0, name: '').obs;
-  Rx<Product> selectedProduct = Product(id: 0, name: '').obs;
+  CustomerVM selectedCustomer = CustomerVM(id: 0, name: '');
+  Product selectedProduct = Product(id: 0, name: '');
   late OrderDetailsVM selectedOrder;
   List<CustomerVM> customersList = [];
   List<Product> productsList = [];
@@ -42,9 +42,9 @@ class _EditOrdersPageState extends State<EditOrdersPage> {
   void initState() {
     final Map<String, dynamic> args = Get.arguments;
     selectedOrder = OrderDetailsVM.fromJson(args);
-    selectedCustomer.value = CustomerVM(
+    selectedCustomer = CustomerVM(
         id: selectedOrder.customerId, name: selectedOrder.customerName);
-    selectedProduct.value =
+    selectedProduct =
         Product(id: selectedOrder.productId, name: selectedOrder.productName);
     super.initState();
   }
@@ -63,43 +63,37 @@ class _EditOrdersPageState extends State<EditOrdersPage> {
               FutureBuilder(
                   future: initializeCustomer(),
                   builder: (context, snapshot) {
-                    return Obx(
-                      () => CustomCombobox(
-                        dataList: customersList
-                            .map((customer) => CustomComboboxitem(
-                                title: customer.name, id: customer.id))
-                            .toList(),
-                        text: selectedCustomer.value.name,
-                        onSelected: (customer) {
-                          selectedCustomer.value =
-                              CustomerVM(id: customer.id, name: customer.title);
-                        },
-                        suffixText: 'ID: ${selectedCustomer.value.id}',
-                        icon: Icons.person,
-                        label: 'Customer Name',
-                        helperText: 'Choose Customer',
-                      ),
+                    return CustomCombobox(
+                      dataList: customersList
+                          .map((customer) => CustomComboboxitem(
+                              title: customer.name, id: customer.id))
+                          .toList(),
+                      text: selectedCustomer.name,
+                      onSelected: (customer) {
+                        selectedCustomer =
+                            CustomerVM(id: customer.id, name: customer.title);
+                      },
+                      icon: Icons.person,
+                      label: 'Customer Name',
+                      helperText: 'Choose Customer',
                     );
                   }),
               FutureBuilder(
                   future: initializeProducts(),
                   builder: (context, snapshot) {
-                    return Obx(
-                      () => CustomCombobox(
-                        dataList: productsList
-                            .map((product) => CustomComboboxitem(
-                                title: product.name, id: product.id))
-                            .toList(),
-                        icon: Icons.category,
-                        suffixText: 'ID: ${selectedProduct.value.id}',
-                        text: selectedProduct.value.name,
-                        onSelected: (product) {
-                          selectedProduct.value =
-                              Product(id: product.id, name: product.title);
-                        },
-                        label: 'Product Name',
-                        helperText: 'Choose Product',
-                      ),
+                    return CustomCombobox(
+                      dataList: productsList
+                          .map((product) => CustomComboboxitem(
+                              title: product.name, id: product.id))
+                          .toList(),
+                      icon: Icons.category,
+                      text: selectedProduct.name,
+                      onSelected: (product) {
+                        selectedProduct =
+                            Product(id: product.id, name: product.title);
+                      },
+                      label: 'Product Name',
+                      helperText: 'Choose Product',
                     );
                   }),
               CustomTextBox(
@@ -163,8 +157,8 @@ class _EditOrdersPageState extends State<EditOrdersPage> {
       int salesmanID = prefs.getInt('salesman_id')!;
       _formKey.currentState!.save();
       Order newOrder = Order(
-        productId: selectedProduct.value.id,
-        customerId: selectedCustomer.value.id,
+        productId: selectedProduct.id,
+        customerId: selectedCustomer.id,
         salesmanId: salesmanID,
         qty: qty,
         date: date,
@@ -183,8 +177,8 @@ class _EditOrdersPageState extends State<EditOrdersPage> {
             salesmanId: newOrder.salesmanId,
             qty: newOrder.qty,
             date: newOrder.date,
-            productName: selectedProduct.value.name,
-            customerName: selectedCustomer.value.name,
+            productName: selectedProduct.name,
+            customerName: selectedCustomer.name,
           ),
         );
         Get.back(); // Navigate back to homepage

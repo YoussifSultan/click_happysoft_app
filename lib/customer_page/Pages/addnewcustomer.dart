@@ -214,7 +214,7 @@ class _AddnewCustomerPageState extends State<AddnewCustomerPage> {
                 color: AppColors.primary,
                 icon: Icons.check,
                 onPressed: () async {
-                  await saveNewOrder();
+                  await saveNewCustomer();
                 }),
             AppSpacing.v24,
           ],
@@ -223,7 +223,7 @@ class _AddnewCustomerPageState extends State<AddnewCustomerPage> {
     ));
   }
 
-  Future<void> saveNewOrder() async {
+  Future<void> saveNewCustomer() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       final prefs = await SharedPreferences.getInstance();

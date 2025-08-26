@@ -37,8 +37,8 @@ class PrimaryScaffold extends StatelessWidget {
         onPressed: () {
           Get.toNamed(AppRoutes.addNewOrder); // Navigate to add new order page
         },
-        child: const Icon(Icons.add, color: AppColors.white),
         backgroundColor: AppColors.primary,
+        child: const Icon(Icons.add, color: AppColors.white),
       ),
     );
   }

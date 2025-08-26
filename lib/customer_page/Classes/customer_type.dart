@@ -1,17 +1,17 @@
 class CustomerType {
-  String customerType;
-  int id;
+  final String customerType;
+  final int id;
 
-  CustomerType({required this.customerType, required this.id});
+  const CustomerType({required this.customerType, required this.id});
 
-  CustomerType fromjson(Map<String, dynamic> json) {
+  factory CustomerType.fromJson(Map<String, dynamic> json) {
     return CustomerType(
       customerType: json['customerType'] ?? '',
       id: json['id'] ?? 0,
     );
   }
 
-  Map<String, dynamic> tojson() {
+  Map<String, dynamic> toJson() {
     return {
       'customerType': customerType,
       'id': id,
@@ -19,27 +19,29 @@ class CustomerType {
   }
 
   @override
-  String toString() {
-    return 'CustomerType{customerType: $customerType, id: $id}';
-  }
+  String toString() => 'CustomerType(id: $id, customerType: $customerType)';
 
-  static List<CustomerType> get customerTypes {
-    return [
-      CustomerType(customerType: 'Company', id: 1),
-      CustomerType(customerType: 'Individual', id: 2),
-      CustomerType(customerType: 'Foriegn Individual', id: 3),
-    ];
-  }
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CustomerType &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
 
-  static CustomerType get company {
-    return CustomerType(customerType: 'Company', id: 1);
-  }
+  @override
+  int get hashCode => id.hashCode;
 
-  static CustomerType get indivisual {
-    return CustomerType(customerType: 'Indivisual', id: 2);
-  }
+  // Static constants
+  static const List<CustomerType> customerTypes = [
+    CustomerType(customerType: 'Company', id: 1),
+    CustomerType(customerType: 'Individual', id: 2),
+    CustomerType(customerType: 'Foreign Individual', id: 3),
+  ];
 
-  static CustomerType get foreignIndivisual {
-    return CustomerType(customerType: 'Foreign Indivisual', id: 3);
-  }
+  static const CustomerType company =
+      CustomerType(customerType: 'Company', id: 1);
+  static const CustomerType individual =
+      CustomerType(customerType: 'Individual', id: 2);
+  static const CustomerType foreignIndividual =
+      CustomerType(customerType: 'Foreign Individual', id: 3);
 }

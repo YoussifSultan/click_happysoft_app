@@ -128,6 +128,7 @@ class CustomButton extends StatelessWidget {
   final String text;
   final Color color;
   final IconData icon;
+  final double height;
   final VoidCallback onPressed;
   final RxBool _onHover = false.obs;
 
@@ -137,6 +138,7 @@ class CustomButton extends StatelessWidget {
     required this.color,
     required this.icon,
     required this.onPressed,
+    this.height = 60,
   });
 
   @override
@@ -155,6 +157,7 @@ class CustomButton extends StatelessWidget {
           final isHover = _onHover.value;
 
           return AnimatedContainer(
+            height: height,
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             decoration: BoxDecoration(

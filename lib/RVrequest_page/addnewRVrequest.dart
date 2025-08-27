@@ -107,8 +107,16 @@ class _AddnewrvrequestState extends State<Addnewrvrequest> {
                     helperText: 'Enter Amount',
                     keyboardType: TextInputType.number,
                     icon: Icons.attach_money_sharp,
+                    validator: (value) {
+                      if (GetUtils.isNullOrBlank(value)!) {
+                        return 'Amount is required';
+                      } else if (!GetUtils.isNum(value!)) {
+                        return 'Invalid Amount';
+                      }
+                      return null;
+                    },
                     onSaved: (value) {
-                      amount = value!;
+                      amount = double.parse(value);
                     },
                   ),
                   CustomCombobox(
@@ -136,9 +144,12 @@ class _AddnewrvrequestState extends State<Addnewrvrequest> {
                   AppSpacing.v24,
                   CustomButton(
                       text: 'Save',
-                      color: Colors.greenAccent,
+                      color: AppColors.primary,
                       icon: Icons.check,
-                      onPressed: () {})
+                      onPressed: () {
+                        saveNewRVRequest();
+                      }),
+                  AppSpacing.v24,
                 ],
               ),
             )));
@@ -158,7 +169,7 @@ class _AddnewrvrequestState extends State<Addnewrvrequest> {
         voucherDate: dateOfReceipt,
         referenceNo: referenceNo,
         amount: amount,
-        currency: selectedCurrency.name,
+        currency: selectedCurrency.code,
         description: notes,
         approvalStatus: 0, // Default to pending approval
         createdAt: DateTime.now(),
@@ -172,7 +183,8 @@ class _AddnewrvrequestState extends State<Addnewrvrequest> {
           'The RV Request is saved successfully',
         );
       } else {
-        Get.back(); // Navigate back to homepage
+        // Get.back(); // Navigate back to homepage
+        print(response.body);
         Get.snackbar(
           '$responseCode',
           response.body,

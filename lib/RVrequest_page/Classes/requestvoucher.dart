@@ -1,6 +1,5 @@
 class ReceiptVoucher {
   final int voucherId;
-  final String voucherNo;
   final int salesmanId;
   final int customerId;
   final int paymentMethod;
@@ -14,7 +13,6 @@ class ReceiptVoucher {
 
   ReceiptVoucher({
     required this.voucherId,
-    required this.voucherNo,
     required this.salesmanId,
     required this.customerId,
     required this.paymentMethod,
@@ -31,7 +29,6 @@ class ReceiptVoucher {
   factory ReceiptVoucher.fromJson(Map<String, dynamic> json) {
     return ReceiptVoucher(
       voucherId: json['Voucher_ID'],
-      voucherNo: json['Voucher_No'],
       salesmanId: json['Salesman_ID'],
       customerId: json['Customer_ID'],
       paymentMethod: json['Payment_Method'],
@@ -49,7 +46,6 @@ class ReceiptVoucher {
   Map<String, dynamic> toJson() {
     return {
       'Voucher_ID': voucherId,
-      'Voucher_No': voucherNo,
       'Salesman_ID': salesmanId,
       'Customer_ID': customerId,
       'Payment_Method': paymentMethod,

@@ -3,7 +3,10 @@ import 'package:click_happysoft_app/constants/common_constants.dart';
 import 'package:click_happysoft_app/constants/scaffolds/primary_scaffold.dart';
 import 'package:click_happysoft_app/constants/ui_constants/form_widgets.dart';
 import 'package:click_happysoft_app/dashboard_page/dashboard_sql_manager.dart';
+import 'package:click_happysoft_app/routing/app_routes.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Dashboard extends StatefulWidget {
@@ -15,7 +18,9 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   int noNotValidCustomers = 0;
+  int noValidCustomers = 0;
   int noNotValidOrders = 0;
+  int noValidOrders = 0;
   Map<String, double> cashBalance = {};
   Map<String, double> chequeBalance = {};
 
@@ -23,8 +28,11 @@ class _DashboardState extends State<Dashboard> {
     final prefs = await SharedPreferences.getInstance();
     int salesmanID = prefs.getInt('salesman_id')!;
     noNotValidCustomers =
+        await DashboardSqlManager.getNoCustomers(false, salesmanID);
+    noNotValidOrders = await DashboardSqlManager.getNoOrders(false, salesmanID);
+    noValidCustomers =
         await DashboardSqlManager.getNoCustomers(true, salesmanID);
-    noNotValidOrders = await DashboardSqlManager.getNoOrders(true, salesmanID);
+    noValidOrders = await DashboardSqlManager.getNoOrders(true, salesmanID);
     cashBalance =
         await DashboardSqlManager.getBalance(salesmanID, PaymentMethod.cash);
     chequeBalance =
@@ -43,19 +51,42 @@ class _DashboardState extends State<Dashboard> {
               return const Center(child: CircularProgressIndicator());
             }
             return ListView(shrinkWrap: true, children: [
-              GridView.count(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
-                crossAxisSpacing: 6,
-                mainAxisSpacing: 6,
-                children: [
-                  PowerBiCard(
-                      value: "$noNotValidCustomers",
-                      caption: "No of Customers"),
-                  PowerBiCard(
-                      value: "$noNotValidOrders", caption: "No of Orders"),
+              BalanceCard(
+                icon: Icons.people,
+                details: [
+                  DetailRow(
+                      title: noNotValidCustomers.toString(),
+                      caption: 'Not Valid Customers'),
+                  DetailRow(
+                      title: noValidCustomers.toString(),
+                      caption: "Valid Customers")
                 ],
+                title: "${noNotValidCustomers + noValidCustomers}",
+                onAddButtionPressed: () {
+                  Get.toNamed(AppRoutes.addnewCustomer);
+                  setState(() {});
+                },
+                caption: 'Total NO Customers',
+              ),
+              BalanceCard(
+                icon: Icons.edit,
+                details: [
+                  DetailRow(
+                      title: noNotValidOrders.toString(),
+                      caption: 'Not Valid Orders'),
+                  DetailRow(
+                      title: noValidOrders.toString(), caption: "Valid Orders")
+                ],
+                title: "${noNotValidOrders + noValidOrders}",
+                caption: 'Total NO Orders',
+                onAddButtionPressed: () async {
+                  await Get.toNamed(AppRoutes.addNewOrder);
+                  setState(() {});
+                },
+                onDetailsButtionPressed: () async {
+                  await Get.toNamed(AppRoutes.orders);
+                  setState(() {});
+                },
               ),
               BalanceCard(
                 details: cashBalance.entries.map((e) {
@@ -63,64 +94,26 @@ class _DashboardState extends State<Dashboard> {
                 }).toList(),
                 title: '${cashBalance['EGP'] ?? 0.0} EGP',
                 caption: 'Salesman Cash Balance',
+                onAddButtionPressed: () async {
+                  await Get.toNamed(AppRoutes.addnewReceiptVoucherRequest);
+                  setState(() {});
+                },
               ),
               BalanceCard(
+                icon: Icons.account_balance,
                 details: chequeBalance.entries.map((e) {
                   return DetailRow(title: e.value.toString(), caption: e.key);
                 }).toList(),
                 title: '${chequeBalance['EGP'] ?? 0.0} EGP',
                 caption: 'Salesman Cheque Balance',
-              )
+                onAddButtionPressed: () async {
+                  await Get.toNamed(AppRoutes.addnewReceiptVoucherRequest);
+                  setState(() {});
+                },
+              ),
+              AppSpacing.v24
             ]);
           },
-        ),
-      ),
-    );
-  }
-}
-
-class PowerBiCard extends StatelessWidget {
-  final String value;
-  final String caption;
-
-  const PowerBiCard({
-    super.key,
-    required this.value,
-    required this.caption,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      color: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Value (large, bold, like Power BI metric)
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 32, // Bigger number
-                fontWeight: FontWeight.w600,
-                color: Colors.black, // Strong dark text
-              ),
-            ),
-            const SizedBox(height: 6),
-            // Caption (small, grey, like Power BI label)
-            Text(
-              caption,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                color: Colors.grey, // Muted caption
-              ),
-            ),
-          ],
         ),
       ),
     );
@@ -132,10 +125,16 @@ class BalanceCard extends StatelessWidget {
       {super.key,
       required this.details,
       required this.title,
-      required this.caption});
+      required this.caption,
+      this.icon = Icons.account_balance_wallet_outlined,
+      this.onAddButtionPressed,
+      this.onDetailsButtionPressed});
   final List<DetailRow> details;
   final String title;
   final String caption;
+  final Function? onAddButtionPressed;
+  final Function? onDetailsButtionPressed;
+  final IconData icon;
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -152,29 +151,40 @@ class BalanceCard extends StatelessWidget {
           children: [
             // Total availability
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Icon(Icons.account_balance_wallet_outlined, size: 32),
-                const SizedBox(width: 8),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Row(
                   children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                    Text(
-                      caption,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.black54,
-                      ),
+                    Icon(icon, size: 32),
+                    const SizedBox(width: 8),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                        Text(
+                          caption,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black54,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
+                CustomIconButton(
+                    color: AppColors.primary,
+                    icon: Icons.add,
+                    onPressed: () {
+                      onAddButtionPressed!();
+                    })
               ],
             ),
 
@@ -207,13 +217,31 @@ class BalanceCard extends StatelessWidget {
             // Details button
             Align(
                 alignment: Alignment.centerRight,
-                child: CustomButton(
-                  text: 'Details',
-                  color: AppColors.primary,
-                  icon: Icons.login_outlined,
-                  height: 60,
-                  onPressed: () {},
-                ))
+                child: GestureDetector(
+                  onTap: () {
+                    if (onDetailsButtionPressed == null) {
+                      Get.snackbar("Info", "No Details Available");
+                    } else {
+                      onDetailsButtionPressed!();
+                    }
+                  },
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text("View Details",
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.bold)),
+                      AppSpacing.h8,
+                      Icon(
+                        Icons.arrow_forward,
+                        size: 16,
+                        color: AppColors.primary,
+                      ),
+                    ],
+                  ),
+                )),
           ],
         ),
       ),

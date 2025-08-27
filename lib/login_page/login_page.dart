@@ -158,7 +158,7 @@ class _LoginPageState extends State<LoginPage> {
         await prefs.setString('salesman_email', salesman.email);
         await prefs.setInt('salesman_id', salesman.id);
         await prefs.setString('salesman_name', salesman.name);
-        Get.offAndToNamed(AppRoutes.orders);
+        Get.offAndToNamed(AppRoutes.dashboard);
       } else {
         Get.snackbar(
           'Login Failed',

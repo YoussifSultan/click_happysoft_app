@@ -194,6 +194,48 @@ class CustomButton extends StatelessWidget {
   }
 }
 
+class CustomIconButton extends StatelessWidget {
+  final Color color;
+  final IconData icon;
+  final VoidCallback onPressed;
+  final RxBool _onHover = false.obs;
+
+  CustomIconButton({
+    super.key,
+    required this.color,
+    required this.icon,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => _onHover.value = true,
+      onExit: (_) => _onHover.value = false,
+      child: GestureDetector(
+        onTapDown: (_) => _onHover.value = true,
+        onTapUp: (_) {
+          _onHover.value = false;
+          onPressed();
+        },
+        onTapCancel: () => _onHover.value = false,
+        child: Obx(() {
+          final isHover = _onHover.value;
+
+          return Container(
+              padding: const EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                  color: isHover ? color : Colors.transparent,
+                  borderRadius: BorderRadius.circular(60),
+                  border: Border.all(
+                      width: 2, color: isHover ? AppColors.white : color)),
+              child: Icon(icon, color: isHover ? AppColors.white : color));
+        }),
+      ),
+    );
+  }
+}
+
 class DatepickerBox extends StatefulWidget {
   final Function? onSaved;
   final String label;

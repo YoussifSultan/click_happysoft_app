@@ -29,7 +29,8 @@ class _AddnewrvrequestState extends State<Addnewrvrequest> {
   final _formKey =
       GlobalKey<FormState>(); // Needed to access and validate the form
   List<CustomerVM> customersList = [];
-  PaymentMethod selectedPaymentMethod = PaymentMethod.cash; // Default selection
+  Rx<PaymentMethod> selectedPaymentMethod =
+      PaymentMethod.cash.obs; // Default selection
   Currency selectedCurrency = Currency.egp; // Default selection
   Future<void> initializeCustomers() async {
     customersList = await RvSqlmanager.fetchAllCustomers();
@@ -46,14 +47,6 @@ class _AddnewrvrequestState extends State<Addnewrvrequest> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   AppSpacing.v16,
-                  CustomTextBox(
-                    label: 'Voucher No',
-                    helperText: 'Enter Voucher No',
-                    icon: Icons.numbers,
-                    onSaved: (value) {
-                      voucherNo = value!;
-                    },
-                  ),
                   FutureBuilder(
                       future: initializeCustomers(),
                       builder: (context, snapshot) {
@@ -79,12 +72,12 @@ class _AddnewrvrequestState extends State<Addnewrvrequest> {
                               id: paymentMethod.id))
                           .toList(),
                       label: 'Payment Method',
-                      text: selectedPaymentMethod.paymentMethod,
+                      text: '',
                       icon: Icons.card_membership,
                       helperText: 'Choose Payment Method',
                       onSelected: (value) {
-                        selectedPaymentMethod = PaymentMethod.methods
-                            .firstWhere((c) => c.id == value.id);
+                        selectedPaymentMethod(PaymentMethod.methods
+                            .firstWhere((c) => c.id == value.id));
                       }),
                   DatepickerBox(
                     initialDate: dateOfReceipt,
@@ -94,14 +87,19 @@ class _AddnewrvrequestState extends State<Addnewrvrequest> {
                       dateOfReceipt = newValue!;
                     },
                   ),
-                  CustomTextBox(
-                    label: 'Refernce No',
-                    helperText: 'Enter Reference No',
-                    icon: Icons.numbers,
-                    onSaved: (value) {
-                      referenceNo = value!;
-                    },
-                  ),
+                  Obx(() {
+                    if (selectedPaymentMethod.value == PaymentMethod.cheque) {
+                      return CustomTextBox(
+                        label: 'Refernce No',
+                        helperText: 'Enter Reference No',
+                        icon: Icons.numbers,
+                        onSaved: (value) {
+                          referenceNo = value!;
+                        },
+                      );
+                    }
+                    return const SizedBox();
+                  }),
                   CustomTextBox(
                     label: 'Amount',
                     helperText: 'Enter Amount',
@@ -162,10 +160,9 @@ class _AddnewrvrequestState extends State<Addnewrvrequest> {
       int salesmanID = prefs.getInt('salesman_id')!;
       ReceiptVoucher newRVRequest = ReceiptVoucher(
         voucherId: 0,
-        voucherNo: voucherNo,
         salesmanId: salesmanID,
         customerId: selectedCustomer.id,
-        paymentMethod: selectedPaymentMethod.id,
+        paymentMethod: selectedPaymentMethod.value.id,
         voucherDate: dateOfReceipt,
         referenceNo: referenceNo,
         amount: amount,

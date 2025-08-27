@@ -18,103 +18,60 @@ class OrdersPage extends StatefulWidget {
 class _OrdersPageState extends State<OrdersPage> {
   @override
   void initState() {
-    fetchOrdersOfSalesman();
     super.initState();
   }
 
   Future<List<OrderDetailsVM>> fetchOrdersOfSalesman() async {
     final prefs = await SharedPreferences.getInstance();
     int salesmanID = prefs.getInt('salesman_id')!;
-    final orderListController = Get.find<OrdersListController>();
     List<OrderDetailsVM> orders =
         await OrderSqlManager.fetchAllOrders(salesmanID);
-    orderListController.orders.assignAll(orders);
+    print(orders.length);
     return orders;
   }
 
   @override
   Widget build(BuildContext context) {
-    return SecondaryScaffold(body: Obx(() {
-      final orders = Get.find<OrdersListController>().orders;
-      if (orders.isEmpty) {
-        return const Center(
-          child: Text(
-            'No orders found',
-            style: TextStyle(color: AppColors.gray, fontSize: 18),
-          ),
-        );
-      }
-      return ListView(
-        children: [
-          ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: orders.length,
-              itemBuilder: (context, index) {
-                final order = orders[index];
-                return ListTile(
-                  title: Text(
-                    order.customerName,
-                    style:
-                        const TextStyle(color: AppColors.black, fontSize: 18),
+    return SecondaryScaffold(
+        body: FutureBuilder(
+            future: fetchOrdersOfSalesman(),
+            builder: (context, snapshot) {
+              if (snapshot.data == null) {
+                return const Center(
+                  child: Text(
+                    'No orders found',
+                    style: TextStyle(color: AppColors.gray, fontSize: 18),
                   ),
-                  trailing: Text(
-                    DateFormat('dd/MM/yyyy').format(order.date),
-                    style: const TextStyle(color: AppColors.gray, fontSize: 13),
-                  ),
-                  subtitle: Text(
-                    "${order.productName} - ${order.qty}",
-                    style:
-                        const TextStyle(color: AppColors.primary, fontSize: 13),
-                  ),
-                  onTap: () {
-                    Get.toNamed(AppRoutes.editOrder, arguments: order.toMap());
-                  },
                 );
-              }),
-          const Divider(),
-          Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: GridView.count(
-                crossAxisCount: 2, // 2 tiles per row
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                children: List.generate(4, (index) {
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(30), // Rounded corners
-                    child: Container(
-                      height: 200, // Greater height
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300], // Optional background color
+              }
+              return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final order = snapshot.data![index];
+                    return ListTile(
+                      title: Text(
+                        order.customerName,
+                        style: const TextStyle(
+                            color: AppColors.black, fontSize: 18),
                       ),
-                      child: Image.asset(
-                        'assets/products/product${index + 1}.png', // Replace with your image
-                        fit: BoxFit.cover, // Cover entire container
+                      trailing: Text(
+                        DateFormat('dd/MM/yyyy').format(order.date),
+                        style: const TextStyle(
+                            color: AppColors.gray, fontSize: 13),
                       ),
-                    ),
-                  );
-                }),
-              ))
-        ],
-      );
-    }));
-  }
-}
-
-class OrdersListController extends GetxController {
-  final RxList<OrderDetailsVM> orders = <OrderDetailsVM>[].obs;
-
-  void addOrder(OrderDetailsVM order) {
-    orders.add(order);
-  }
-
-  void updateOrder(int index, OrderDetailsVM updatedOrder) {
-    orders[index] = updatedOrder;
-  }
-
-  void deleteOrder(int index) {
-    orders.removeAt(index);
+                      subtitle: Text(
+                        "${order.productName} - ${order.qty}",
+                        style: const TextStyle(
+                            color: AppColors.primary, fontSize: 13),
+                      ),
+                      onTap: () {
+                        Get.toNamed(AppRoutes.editOrder,
+                            arguments: order.toMap());
+                      },
+                    );
+                  });
+            }));
   }
 }

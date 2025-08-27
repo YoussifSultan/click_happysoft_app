@@ -167,20 +167,6 @@ class _EditOrdersPageState extends State<EditOrdersPage> {
       int responseCode = await OrderSqlManager.editOrder(newOrder);
 
       if (responseCode == 200) {
-        final ordersListController = Get.find<OrdersListController>();
-        ordersListController.updateOrder(
-          ordersListController.orders.indexWhere((o) => o.id == newOrder.id),
-          OrderDetailsVM(
-            id: newOrder.id,
-            productId: newOrder.productId,
-            customerId: newOrder.customerId,
-            salesmanId: newOrder.salesmanId,
-            qty: newOrder.qty,
-            date: newOrder.date,
-            productName: selectedProduct.name,
-            customerName: selectedCustomer.name,
-          ),
-        );
         Get.back(); // Navigate back to homepage
         Get.snackbar(
           'Edited Successfully',
@@ -200,11 +186,6 @@ class _EditOrdersPageState extends State<EditOrdersPage> {
     if (_formKey.currentState!.validate()) {
       int responseCode = await OrderSqlManager.deleteOrder(selectedOrder.id);
       if (responseCode == 200) {
-        final ordersListController = Get.find<OrdersListController>();
-        ordersListController.orders.removeAt(
-          ordersListController.orders
-              .indexWhere((o) => o.id == selectedOrder.id),
-        ); // Delete
         Get.back(); // Navigate back to homepage
         Get.snackbar(
           'Deleted Successfully',

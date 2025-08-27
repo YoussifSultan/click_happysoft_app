@@ -155,16 +155,6 @@ class _AddNewOrderPageState extends State<AddNewOrderPage> {
           'Saved Successfully',
           'The order is saved successfully',
         );
-        final orderListController = Get.find<OrdersListController>();
-        orderListController.orders.add(OrderDetailsVM(
-            customerId: selectedCustomer.id,
-            customerName: selectedCustomer.name,
-            productId: selectedProduct.id,
-            productName: selectedProduct.name,
-            qty: qty,
-            date: date,
-            id: jsonDecode(response.body)['last_insert_id'],
-            salesmanId: salesmanID));
       } else {
         Get.back(); // Navigate back to homepage
         Get.snackbar(

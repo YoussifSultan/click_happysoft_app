@@ -42,9 +42,9 @@ SELECT Customer_ID,English_Name FROM railway.customers;	''',
       body: jsonEncode({
         'query': '''
 INSERT INTO ReceiptVoucher 
-  (Voucher_No, Salesman_ID, Customer_ID, Payment_Method, Voucher_Date, Reference_No, Amount, Currency, Description, approval_status, Created_At) 
+  ( Salesman_ID, Customer_ID, Payment_Method, Voucher_Date, Reference_No, Amount, Currency, Description, approval_status, Created_At) 
 VALUES 
-  ('${receiptVoucher.voucherNo}', ${receiptVoucher.salesmanId}, ${receiptVoucher.customerId}, ${receiptVoucher.paymentMethod}, '${receiptVoucher.voucherDate.toIso8601String()}', 
+  ( ${receiptVoucher.salesmanId}, ${receiptVoucher.customerId}, ${receiptVoucher.paymentMethod}, '${receiptVoucher.voucherDate.toIso8601String()}', 
    '${receiptVoucher.referenceNo}', ${receiptVoucher.amount}, '${receiptVoucher.currency}', '${receiptVoucher.description}', ${receiptVoucher.approvalStatus}, '${receiptVoucher.createdAt.toIso8601String()}');
 ''',
       }),

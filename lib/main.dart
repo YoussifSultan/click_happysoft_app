@@ -6,7 +6,6 @@ import 'package:get/get.dart';
 
 void main() {
   Get.put(NavController()); // Inject controller globally
-  Get.put(OrdersListController()); // 👈 Global access
 
   runApp(const MyApp());
 }

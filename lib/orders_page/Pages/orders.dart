@@ -1,8 +1,8 @@
+import 'package:click_happysoft_app/constants/pages/list.dart';
 import 'package:click_happysoft_app/constants/scaffolds/secondary_scaffold.dart';
 import 'package:click_happysoft_app/orders_page/Viewmodels/ordersfulldata.dart';
 import 'package:click_happysoft_app/orders_page/order_sql_manager.dart';
 import 'package:click_happysoft_app/routing/app_routes.dart';
-import 'package:click_happysoft_app/constants/common_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -16,62 +16,42 @@ class OrdersPage extends StatefulWidget {
 }
 
 class _OrdersPageState extends State<OrdersPage> {
+  List<OrderDetailsVM> orders = [];
   @override
   void initState() {
     super.initState();
   }
 
-  Future<List<OrderDetailsVM>> fetchOrdersOfSalesman() async {
+  Future<void> fetchOrdersOfSalesman() async {
     final prefs = await SharedPreferences.getInstance();
     int salesmanID = prefs.getInt('salesman_id')!;
-    List<OrderDetailsVM> orders =
-        await OrderSqlManager.fetchAllOrders(salesmanID);
-    print(orders.length);
-    return orders;
+    orders = await OrderSqlManager.fetchAllOrders(salesmanID);
   }
 
   @override
   Widget build(BuildContext context) {
-    return SecondaryScaffold(
-        body: FutureBuilder(
-            future: fetchOrdersOfSalesman(),
-            builder: (context, snapshot) {
-              if (snapshot.data == null) {
-                return const Center(
-                  child: Text(
-                    'No orders found',
-                    style: TextStyle(color: AppColors.gray, fontSize: 18),
-                  ),
-                );
-              }
-              return ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    final order = snapshot.data![index];
-                    return ListTile(
-                      title: Text(
-                        order.customerName,
-                        style: const TextStyle(
-                            color: AppColors.black, fontSize: 18),
-                      ),
-                      trailing: Text(
-                        DateFormat('dd/MM/yyyy').format(order.date),
-                        style: const TextStyle(
-                            color: AppColors.gray, fontSize: 13),
-                      ),
-                      subtitle: Text(
-                        "${order.productName} - ${order.qty}",
-                        style: const TextStyle(
-                            color: AppColors.primary, fontSize: 13),
-                      ),
-                      onTap: () {
-                        Get.toNamed(AppRoutes.editOrder,
-                            arguments: order.toMap());
-                      },
-                    );
-                  });
-            }));
+    return FutureBuilder(
+        future: fetchOrdersOfSalesman(),
+        builder: (context, _) {
+          if (orders.isEmpty) {
+            return const SecondaryScaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+          return ListViewPage(
+              dataName: "Orders",
+              listItems: orders.map((order) {
+                return ListItem(
+                    title: order.customerName,
+                    subtitle: "${order.productName} - ${order.qty}",
+                    trailing: DateFormat('dd/MM/yyyy').format(order.date),
+                    onTap: () {
+                      Get.toNamed(AppRoutes.editOrder,
+                          arguments: order.toMap());
+                    });
+              }).toList());
+        });
   }
 }

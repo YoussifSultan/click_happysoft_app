@@ -1,3 +1,4 @@
+import 'package:click_happysoft_app/customer_page/Viewmodels/customerListItem.dart';
 import 'package:click_happysoft_app/customer_page/Classes/customer_class.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
@@ -24,5 +25,35 @@ VALUES (${customer.salesmanID}, '${customer.arabicName}', '${customer.englishNam
       }),
     );
     return response;
+  }
+
+  static Future<List<CustomerListItem>> fetchAllCustomers(
+      int salesmanID) async {
+    final url = Uri.parse('https://restapi-production-e4e5.up.railway.app/get');
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': 'aP_cPLGZW69DTVH96mvDL1qJ5f2PfPY9SlpWox7rkCw'
+      },
+      body: jsonEncode({
+        'query': '''
+SELECT 
+    Customer_ID, English_Name, Customer_Type, Mobile
+FROM
+    customers
+WHERE
+    salesman_ID = 6
+''',
+      }),
+    );
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return List.generate(data.length, (i) {
+        return CustomerListItem.fromJson(data[i]);
+      });
+    } else {
+      return Future.error('Failed to load data');
+    }
   }
 }

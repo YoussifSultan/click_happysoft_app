@@ -67,6 +67,12 @@ class _DashboardState extends State<Dashboard> {
                   setState(() {});
                 },
                 caption: 'Total NO Customers',
+                onDetailsButtionPressed: () async {
+                  await Get.toNamed(
+                    AppRoutes.customers,
+                  );
+                  setState(() {});
+                },
               ),
               BalanceCard(
                 icon: Icons.edit,
@@ -84,7 +90,9 @@ class _DashboardState extends State<Dashboard> {
                   setState(() {});
                 },
                 onDetailsButtionPressed: () async {
-                  await Get.toNamed(AppRoutes.orders);
+                  await Get.toNamed(
+                    AppRoutes.orders,
+                  );
                   setState(() {});
                 },
               ),

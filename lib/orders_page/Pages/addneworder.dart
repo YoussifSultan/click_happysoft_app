@@ -1,8 +1,4 @@
-import 'dart:convert';
-
-import 'package:click_happysoft_app/orders_page/Pages/orders.dart';
 import 'package:click_happysoft_app/orders_page/Viewmodels/customerVM.dart';
-import 'package:click_happysoft_app/orders_page/Viewmodels/ordersfulldata.dart';
 import 'package:click_happysoft_app/orders_page/classes/orders_class.dart';
 import 'package:click_happysoft_app/orders_page/classes/product_class.dart';
 import 'package:click_happysoft_app/orders_page/order_sql_manager.dart';

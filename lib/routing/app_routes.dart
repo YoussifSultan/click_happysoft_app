@@ -1,5 +1,7 @@
 import 'package:click_happysoft_app/RVrequest_page/addnewRVrequest.dart';
+import 'package:click_happysoft_app/constants/pages/list.dart';
 import 'package:click_happysoft_app/customer_page/Pages/addnewcustomer.dart';
+import 'package:click_happysoft_app/customer_page/Pages/customers.dart';
 import 'package:click_happysoft_app/dashboard_page/Pages/dashboard.dart';
 import 'package:click_happysoft_app/login_page/login_page.dart';
 import 'package:click_happysoft_app/orders_page/Pages/addneworder.dart';
@@ -19,9 +21,11 @@ class AppRoutes {
   static const String orders = '/orders/';
 
   static const String addnewCustomer = '/customer/add/';
+  static const String customers = '/customer/';
 
   static const String addnewReceiptVoucherRequest =
       '/receiptvoucherrequest/add/';
+  static const String rvReceipts = '/receiptvoucherrequest/';
 
   static const String mainmenu = '/menu/';
   static const String dashboard = '/dashboard/';
@@ -37,6 +41,10 @@ class AppRoutes {
         name: addnewCustomer,
         transition: Transition.fadeIn,
         page: () => const AddnewCustomerPage()),
+    GetPage(
+        name: customers,
+        transition: Transition.fadeIn,
+        page: () => const CustomersPage()),
     GetPage(
         name: addNewOrder,
         transition: Transition.fadeIn,
@@ -68,6 +76,10 @@ class AppRoutes {
       transition: Transition.fadeIn,
       page: () => const Addnewrvrequest(),
     ),
+    GetPage(
+        name: rvReceipts,
+        transition: Transition.fadeIn,
+        page: () => const Dashboard()),
   ];
 
   /// Returns the current route name based on the current route.

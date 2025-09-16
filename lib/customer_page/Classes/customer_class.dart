@@ -60,7 +60,7 @@ class Customer {
   /// Convert Customer to JSON
   Map<String, dynamic> toJson() {
     return {
-      'Customer_ID': customerID,
+      'ID': customerID,
       'salesman_ID': salesmanID,
       'Arabic_Name': arabicName,
       'English_Name': englishName,
@@ -80,7 +80,7 @@ class Customer {
 
   @override
   String toString() {
-    return 'Customer(customerID: $customerID, salesmanID: $salesmanID, '
+    return 'Customer(Customer_ID: $customerID, salesmanID: $salesmanID, '
         'arabicName: $arabicName, englishName: $englishName, '
         'category: $category, customerType: $customerType, '
         'mobile: $mobile, faxNumber: $faxNumber, phone: $phone, '

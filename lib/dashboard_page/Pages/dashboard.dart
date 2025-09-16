@@ -106,6 +106,11 @@ class _DashboardState extends State<Dashboard> {
                   await Get.toNamed(AppRoutes.addnewReceiptVoucherRequest);
                   setState(() {});
                 },
+                onDetailsButtionPressed: () async {
+                  await Get.toNamed(AppRoutes.rvReceipts,
+                      arguments: PaymentMethod.cash);
+                  setState(() {});
+                },
               ),
               BalanceCard(
                 icon: Icons.account_balance,
@@ -116,6 +121,11 @@ class _DashboardState extends State<Dashboard> {
                 caption: 'Salesman Cheque Balance',
                 onAddButtionPressed: () async {
                   await Get.toNamed(AppRoutes.addnewReceiptVoucherRequest);
+                  setState(() {});
+                },
+                onDetailsButtionPressed: () async {
+                  await Get.toNamed(AppRoutes.rvReceipts,
+                      arguments: PaymentMethod.cheque);
                   setState(() {});
                 },
               ),

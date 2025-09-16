@@ -29,7 +29,7 @@ SELECT
     s.salesman_name,
     o.qty
 FROM orders o
-JOIN customers c ON o.customer_id = c.customer_id
+JOIN customers c ON o.customer_id = c.Customer_ID
 JOIN products p ON o.product_id = p.product_id
 JOIN salesman s ON o.salesman_id = s.salesman_id
 where o.salesman_id = $salesmanID
@@ -48,7 +48,8 @@ ORDER BY o.order_date DESC
   }
 
   /// fetch all customers from the database
-  static Future<List<CustomerVM>> fetchAllCustomers() async {
+  static Future<List<CustomerVM>> fetchAllCustomers(
+      {bool isApproved = true}) async {
     final url = Uri.parse('https://restapi-production-e4e5.up.railway.app/get');
     final response = await http.post(
       url,
@@ -58,7 +59,12 @@ ORDER BY o.order_date DESC
       },
       body: jsonEncode({
         'query': '''
-SELECT Customer_ID,English_Name FROM railway.customers;	''',
+SELECT 
+    Customer_ID, English_Name
+FROM
+    railway.customers
+WHERE
+    approval_status = ${isApproved ? 1 : 0}''',
       }),
     );
     if (response.statusCode == 200) {

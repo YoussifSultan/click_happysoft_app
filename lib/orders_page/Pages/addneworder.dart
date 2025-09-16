@@ -74,6 +74,7 @@ class _AddNewOrderPageState extends State<AddNewOrderPage> {
               FutureBuilder(
                   future: initializeProducts(),
                   builder: (context, snapshot) {
+                    print(productsList.length);
                     return CustomCombobox(
                       dataList: productsList
                           .map((product) => CustomComboboxitem(

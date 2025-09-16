@@ -1,6 +1,5 @@
 import 'package:click_happysoft_app/RVrequest_page/Classes/paymentmethods.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
 import 'dart:convert';
 
 class DashboardSqlManager {

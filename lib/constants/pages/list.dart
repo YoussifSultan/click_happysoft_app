@@ -34,6 +34,12 @@ class _ListViewPageState extends State<ListViewPage> {
                   item.trailing,
                   style: const TextStyle(color: AppColors.gray, fontSize: 13),
                 ),
+                leading: item.isGood != null
+                    ? Icon(
+                        item.isGood! ? Icons.check_circle : Icons.cancel,
+                        color: item.isGood! ? Colors.green : Colors.red,
+                      )
+                    : null,
                 subtitle: Text(
                   item.subtitle,
                   style:
@@ -50,11 +56,15 @@ class _ListViewPageState extends State<ListViewPage> {
 class ListItem {
   final String title;
   final String subtitle;
+  final bool? isGood;
+  final String? thirdLine;
   final String trailing;
   final Function onTap;
 
   ListItem(
       {required this.title,
+      this.isGood,
+      this.thirdLine,
       required this.subtitle,
       required this.trailing,
       required this.onTap});

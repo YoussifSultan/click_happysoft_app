@@ -6,7 +6,7 @@ class Product {
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      id: json['product_id'],
+      id: int.parse(json['product_id']),
       name: json['product_name'],
     );
   }

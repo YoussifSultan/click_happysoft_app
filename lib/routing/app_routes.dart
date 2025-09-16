@@ -1,5 +1,5 @@
-import 'package:click_happysoft_app/RVrequest_page/addnewRVrequest.dart';
-import 'package:click_happysoft_app/constants/pages/list.dart';
+import 'package:click_happysoft_app/RVrequest_page/Pages/addnewRVrequest.dart';
+import 'package:click_happysoft_app/RVrequest_page/Pages/rv_requests.dart';
 import 'package:click_happysoft_app/customer_page/Pages/addnewcustomer.dart';
 import 'package:click_happysoft_app/customer_page/Pages/customers.dart';
 import 'package:click_happysoft_app/dashboard_page/Pages/dashboard.dart';
@@ -79,7 +79,7 @@ class AppRoutes {
     GetPage(
         name: rvReceipts,
         transition: Transition.fadeIn,
-        page: () => const Dashboard()),
+        page: () => const RvRequestsPage()),
   ];
 
   /// Returns the current route name based on the current route.

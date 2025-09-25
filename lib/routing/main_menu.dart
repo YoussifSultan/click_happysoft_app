@@ -105,7 +105,7 @@ class _MainMenuPageState extends State<MainMenuPage> {
                 return ListTile(
                   leading: const CircleAvatar(
                     backgroundImage:
-                        AssetImage('assets/images/ahmed_khalil.jpg'),
+                        AssetImage('assets/images/logo_arabic.png'),
                   ),
                   title: Text(snapshot.data['name'] ?? 'Salesman Name',
                       style: const TextStyle(fontWeight: FontWeight.bold)),

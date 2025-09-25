@@ -19,16 +19,14 @@ class _CustomersPageState extends State<CustomersPage> {
     super.initState();
   }
 
-  Future<void> fetchCustomersOfSalesman() async {
-    final prefs = await SharedPreferences.getInstance();
-    int salesmanID = prefs.getInt('salesman_id')!;
-    customers = await CustomerSqlManager.fetchAllCustomers(salesmanID);
+  Future<void> fetchAllCustomers() async {
+    customers = await CustomerSqlManager.fetchAllCustomers();
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: fetchCustomersOfSalesman(),
+        future: fetchAllCustomers(),
         builder: (context, _) {
           if (customers.isEmpty) {
             return const SecondaryScaffold(

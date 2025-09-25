@@ -33,15 +33,15 @@ class CustomerType {
 
   // Static constants
   static const List<CustomerType> customerTypes = [
-    CustomerType(customerType: 'Company', id: 1),
-    CustomerType(customerType: 'Individual', id: 2),
-    CustomerType(customerType: 'Foreign Individual', id: 3),
+    CustomerType(customerType: 'Company', id: 0),
+    CustomerType(customerType: 'Individual', id: 1),
+    CustomerType(customerType: 'Foreign Individual', id: 2),
   ];
 
   static const CustomerType company =
-      CustomerType(customerType: 'Company', id: 1);
+      CustomerType(customerType: 'Company', id: 0);
   static const CustomerType individual =
-      CustomerType(customerType: 'Individual', id: 2);
+      CustomerType(customerType: 'Individual', id: 1);
   static const CustomerType foreignIndividual =
-      CustomerType(customerType: 'Foreign Individual', id: 3);
+      CustomerType(customerType: 'Foreign Individual', id: 2);
 }

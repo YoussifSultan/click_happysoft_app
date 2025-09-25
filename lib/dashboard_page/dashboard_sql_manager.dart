@@ -15,7 +15,7 @@ class DashboardSqlManager {
         'query': '''
 Select count(*)
 from customers
-where customers.approval_status = $isapproved and customers.salesman_ID =$salesmanID''',
+where customers.approval_status = $isapproved''',
       }),
     );
     int noCustomers = jsonDecode(response.body)[0]["count(*)"];
